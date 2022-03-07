@@ -1,0 +1,7 @@
+
+class Fetch {
+    public:
+        Fetch() {
+
+        }
+};
