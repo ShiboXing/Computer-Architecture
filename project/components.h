@@ -1,18 +1,34 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <unordered_map>
 
 using namespace std;
 
-class Fetch {
+class fetcher {
     private:
         ifstream *ins_stream;
     public:
         int _fn;
-        Fetch(int fn, string fname) {
+        fetcher(int fn, string fname) {
             _fn = fn;
             ins_stream = new ifstream(fname);
         }
 
-        void fetch_next();
+        string fetch_next();
 };
+
+class rename_map {
+    private:
+        unordered_map<int, int> mapping;
+    public:
+        rename_map() { }    
+
+        int& operator[](int key) {
+            return mapping[key];
+        }
+};
+// class Decoder {
+//     private:
+        
+// }

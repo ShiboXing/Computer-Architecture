@@ -2,13 +2,14 @@
 
 using namespace std;
 
-void Fetch::fetch_next() {
+string fetcher::fetch_next() {
     
+    string line;
+
     if (ins_stream->is_open()) {
-        string line;
+        
         if (!getline(*ins_stream, line))
             ins_stream->close();
-        else
-            cout << line << endl;    
     }
+    return line;
 }
