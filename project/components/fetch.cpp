@@ -11,5 +11,6 @@ string fetcher::fetch_next() {
         if (!getline(*ins_stream, line))
             ins_stream->close();
     }
+
     return line;
 }

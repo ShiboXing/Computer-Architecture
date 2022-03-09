@@ -1,12 +1,18 @@
-#include "components.h"
+#include "components/components.h"
+#include "structures/structures.h"
 #include <iostream>
+#include <stdio.h>
+
+using namespace std;
 
 int main() {
     fetcher f(4, "ins.dat");
-    cout << f._fn << endl;   
-
-    f.fetch_next();
-    f.fetch_next(); 
-
+    auto rm = *rename_map::get_map();
+    ins_table i_t;
+    auto tp = chrono::system_clock::now();
+    
+    i_t.add_ins(tp);
+    
+    
     return 0; 
 }
