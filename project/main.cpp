@@ -11,7 +11,7 @@ int main() {
     ins_table i_t;
     auto tp = chrono::system_clock::now();
     
-    i_t.add_ins(tp);
+    i_t.add_status(tp);
     
     
     return 0; 

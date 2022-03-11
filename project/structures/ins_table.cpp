@@ -1,8 +1,8 @@
 #include "structures.h"
 #include <iostream>
 
-void ins_table::add_ins(Tp &ts) {
+void ins_table::add_status(Tp &ts) {
     bool *tmp = (bool*) malloc(sizeof(false) * 4);
     memset(tmp, false, 4);
-    ins[&ts] = tmp;
+    st_tb[&ts] = tmp;
 }
