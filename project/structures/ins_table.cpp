@@ -1,8 +1,10 @@
 #include "structures.h"
 #include <iostream>
 
-void ins_table::add_status(Tp &ts) {
+extern int PC;
+
+void ins_table::add_status(string ins) {
     bool *tmp = (bool*) malloc(sizeof(false) * 4);
     memset(tmp, false, 4);
-    st_tb[&ts] = tmp;
+    st_tb[PC] = tmp;
 }

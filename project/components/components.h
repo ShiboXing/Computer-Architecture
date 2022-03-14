@@ -1,6 +1,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include "../globals.h"
 
 using namespace std;
 
@@ -17,8 +19,9 @@ class fetcher {
         string fetch_next();
 };
 
-// class decoder {
-    
-//     private:
-        
-// }
+class decoder {
+    private:
+        vector<int> *free_list;
+    public:
+        decoder();
+};
