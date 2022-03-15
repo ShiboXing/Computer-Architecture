@@ -11,7 +11,8 @@ string fetcher::fetch_next() {
         if (!getline(*ins_stream, line))
             ins_stream->close();
     }
-    cout << PC++ << endl;
+
+    PC += 4;
 
     return line;
 }

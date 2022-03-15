@@ -21,8 +21,9 @@ class rename_map {
 
 class instruction {
     private:
-        int _info[4];
-        int _split_one(string ins, string *tmp_val, int start);
+        string _info[4];
+        string _split_one(string ins, int *start);
+        void _fill_info(vector<string> &ins);
     public:
         instruction(string &ins);
 };  

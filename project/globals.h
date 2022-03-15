@@ -4,9 +4,31 @@
 
 using namespace std;
 
-#define INS_SET unordered_map<string, int>  {{"add", 0}}
+#define INS_ID unordered_map<string, int>({\
+    {"add", 1},\
+    {"addi", 2},\
+    {"fld", 3},\
+    {"fsd", 4},\
+    {"fadd", 5},\
+    {"fsub", 6},\
+    {"fmul", 7},\
+    {"fdiv", 8},\
+    {"bne", 9},\
+})
+
+#define INS_LAT unordered_map<string, int>({\
+    {"add", 1},\
+    {"addi", 1},\
+    {"fld", 1},\
+    {"fsd", 1},\
+    {"fadd", 3},\
+    {"fsub", 3},\
+    {"fmul", 4},\
+    {"fdiv", 8},\
+    {"bne", 1},\
+})
 
 extern int PC;
-extern vector<int> FREE_LIST;
-extern unordered_map<int, string> TAG_TB;
-
+extern vector<int> FREE_LIST; // register freelist
+extern unordered_map<string, int> TAG_TB; // map tag string to PC addr
+extern unordered_map<int, int> MEM;
