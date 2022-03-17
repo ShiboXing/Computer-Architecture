@@ -3,8 +3,13 @@
 
 extern int PC;
 
-void ins_table::add_status(string ins) {
-    bool *tmp = (bool*) malloc(sizeof(false) * 4);
-    memset(tmp, false, 4);
-    st_tb[PC] = tmp;
+void ins_table::add_ins(instruction &ins, int pc_ind) {
+    bool tmp[4] = {false, false, false, false};
+    st_tb[pc_ind] = tmp;
+    ins_q.push_front({pc_ind, ins});
 }
+
+// instruction &ins_table::operator[](int ind) {
+//     return ins_q[ind].second;
+// }
+

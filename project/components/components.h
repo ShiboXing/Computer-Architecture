@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "../globals.h"
+#include "../structures/structures.h"
 
 using namespace std;
 
@@ -21,7 +22,10 @@ class fetcher {
 
 class decoder {
     private:
-        vector<int> *free_list;
+        vector<int> free_list;
+        unordered_map<string, string> reg_lst;
+        ins_table &ins_tb;
     public:
-        decoder();
+        decoder(ins_table &ins_tb_ref);
+        void rename_last();
 };

@@ -1,7 +1,7 @@
 
 CC=g++
 CFLAGS=-std=c++11 -c -Wall -pedantic -g
-OBJS=main.o components/fetch.o structures/rename_map.o structures/instruction.o structures/ins_table.o
+OBJS=main.o components/fetch.o components/decoder.o structures/rename_map.o structures/instruction.o structures/ins_table.o 
 
 default: $(OBJS)
 	$(CC) -o main $(OBJS)

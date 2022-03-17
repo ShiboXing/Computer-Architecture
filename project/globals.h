@@ -29,6 +29,5 @@ using namespace std;
 })
 
 extern int PC;
-extern vector<int> FREE_LIST; // register freelist
 extern unordered_map<string, int> TAG_TB; // map tag string to PC addr
 extern unordered_map<int, int> MEM;

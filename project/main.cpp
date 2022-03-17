@@ -1,5 +1,4 @@
 #include "components/components.h"
-#include "structures/structures.h"
 #include <iostream>
 #include <stdio.h>
 
@@ -11,10 +10,20 @@ unordered_map<string, int> TAG_TB;
 unordered_map<int, int> MEM;
 
 int main() {
+
+    ins_table ins_tb;
     fetcher f(4, "ins.dat");
+    decoder d(ins_tb);
+    
     string ins_str;
+
     while ((ins_str = f.fetch_next()).length()) {
         instruction ins(ins_str);
+        if (ins.is_mem)
+            continue;
+        ins_tb.add_ins(ins, PC);    
+        d.rename_last();
+        
     }
 
     return 0; 
