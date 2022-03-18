@@ -22,8 +22,8 @@ class fetcher {
 
 class decoder {
     private:
-        vector<int> free_list;
-        unordered_map<string, string> reg_lst;
+        vector<int> _free_lst;
+        unordered_map<string, string> _reg_lst;
         ins_table &ins_tb;
     public:
         decoder(ins_table &ins_tb_ref);

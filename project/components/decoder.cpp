@@ -3,45 +3,41 @@
 decoder::decoder(ins_table &ins_tb_ref) : ins_tb(ins_tb_ref){
     
     for (int i=31; i>=0; i--) {
-       free_list.push_back(i);
+       _free_lst.push_back(i);
     }
 }
 
 void decoder::rename_last() {
     // get the last register
-    auto last_regs = ins_tb.ins_q.back().second._info;
-    int n_reg_cnt = 0;
+    auto last_ins = ins_tb.ins_q.front().second._info;
 
-    /**
-     * TODO: only check operands that are registers
-     */
     // iterate the instruction to check how many new registers are needed
+    vector<string> n_regs;
     for (int i=1; i<4; i++) {
-        if (reg_lst.find(last_regs[i]) == reg_lst.end())
-            n_reg_cnt++;
+        string reg_str = last_ins[i];
+        if ((reg_str[0] == 'R' || reg_str[0] == 'F') && _reg_lst.find(reg_str) == _reg_lst.end())
+            n_regs.push_back(reg_str);
     }
 
-    
     // not enough free regs
-    if (n_reg_cnt > free_list.size())
+    if (n_regs.size() > _free_lst.size()) 
         return;
     else {
-        
+        for (auto reg_str : n_regs) {
+            _reg_lst[reg_str] = "p" + to_string(_free_lst.back());
+            _free_lst.pop_back();
+        }
     }
-    
-    /** 
-     * TODO: exclude store instruction and read-only ins
-     */
-    // last ins's dest register
-    string *reg = &last_regs[1];
 
+    // last ins's dest reg
+    string dest = last_ins[1];
     // iterate backwards to check for fake data hazards
-    for (int i=ins_tb.ins_q.size()-1; i>=0; i--) {
+    for (int i=1; i<ins_tb.ins_q.size(); i++) {
         auto curr = ins_tb.ins_q[i].second._info;
-        if (curr[1] == *reg || curr[2] == *reg || curr[3] == *reg) {
+        if (last_ins[0] != "fsd" && last_ins[0] != "bne" && dest[0] != '$' && (curr[1] == dest || curr[2] == dest || curr[3] == dest)){
             // rename
-            reg_lst[*reg] = "p" + to_string(free_list.back());
-            free_list.pop_back();
+            _reg_lst[dest] = "p" + to_string(_free_lst.back());
+            _free_lst.pop_back();
             break;
         }
     }
