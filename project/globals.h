@@ -4,17 +4,7 @@
 
 using namespace std;
 
-#define INS_ID unordered_map<string, int>({\
-    {"add", 1},\
-    {"addi", 2},\
-    {"fld", 3},\
-    {"fsd", 4},\
-    {"fadd", 5},\
-    {"fsub", 6},\
-    {"fmul", 7},\
-    {"fdiv", 8},\
-    {"bne", 9},\
-})
+#define NF 4
 
 #define INS_LAT unordered_map<string, int>({\
     {"add", 1},\
@@ -26,6 +16,17 @@ using namespace std;
     {"fmul", 4},\
     {"fdiv", 8},\
     {"bne", 1},\
+})
+
+// resvationa stations count: 
+#define RES_CNT unordered_map<string, int>({\
+    {"INT", 4},\
+    {"LOAD", 2},\
+    {"SAVE", 2},\
+    {"FPADD", 3},\
+    {"FPMULT", 4},\
+    {"FPDIV", 2},\
+    {"BU", 1},\
 })
 
 extern int PC;

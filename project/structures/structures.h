@@ -5,26 +5,22 @@
 
 using namespace std;
 
-/**
-    singleton register hash map
-*/
 class instruction {
     private:
         string _split_one(string ins, int *start);
         void _fill_info(vector<string> &ins);
     public:
+        int _pc;
         bool is_mem;
+        string _type;
         vector<string> _info;
-        instruction(string &ins);
+        instruction(int pc_ind, string &ins);
 };  
 
-// bool status: Issue, Read op, Exec Completed, Write Result
-class ins_table {
+class res_record {
+    private:
+        string _op;
+        vector<string> _reg_info;
     public:
-        ins_table() { }
-        unordered_map<int, bool*> st_tb; 
-        deque<pair<int, instruction&> > ins_q;
-        void add_ins(instruction &ins, int pc_ind);
-        
-        // instruction& operator[](int);
+        res_record(string &op_code);
 };

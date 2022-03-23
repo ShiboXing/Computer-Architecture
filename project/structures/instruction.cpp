@@ -1,7 +1,8 @@
 #include "structures.h"
 #include <iostream>
 
-instruction::instruction(string &ins) {
+instruction::instruction(int pc_ind, string &ins) {
+    int _pc = pc_ind;
     int start = 0;
     vector<string> ins_lst;
     is_mem = false;
@@ -14,11 +15,27 @@ instruction::instruction(string &ins) {
         }
         start++;
     }
-    // for (auto i : ins_lst)
-    //     cout << i << " ";
-    // cout << endl;
 
     _fill_info(ins_lst);
+
+    if (is_mem == false) {
+        // set type
+        if (_info[0] == "add" || _info[0] == "addi")
+            _type = "INT";
+        else if (_info[0] == "fld")
+            _type = "LOAD";
+        else if (_info[0] == "fsd")
+            _type = "SAVE";
+        else if (_info[0] == "fadd" || _info[0] == "fsub")
+            _type = "FPADD";
+        else if (_info[0] == "fmul")
+            _type = "FPMULT";
+        else if (_info[0] == "fdiv")
+            _type = "FPDIV";
+        else if (_info[0] == "bne") 
+            _type = "BU";
+    }
+
 }
 
 void instruction::_fill_info(vector<string> &ins) {
@@ -30,7 +47,7 @@ void instruction::_fill_info(vector<string> &ins) {
         int i = 0;
         string tmp;
         if (ins[i].back() == ':') { // tag (loop: addi R0, R1, 1)
-            TAG_TB[ins[i].substr(0, ins[i].length()-1)] = PC;
+            TAG_TB[ins[i].substr(0, ins[i].length()-1)] = _pc;
             i++;
         } 
 
@@ -50,7 +67,7 @@ string instruction::_split_one(string ins, int *start) {
         if (ins[i] == ':') { // tag
             tmp += ins[i];
             break;
-        } else if (ins[i] == ' ' || ins[i] == ',' || ins[i] == '(' || ins[i] == ')') {
+        } else if (ins[i] == ' ' || ins[i] == ',' || ins[i] == '(' || ins[i] == ')' || ins[i] == '\t') {
             break;
         } 
         tmp += ins[i];
