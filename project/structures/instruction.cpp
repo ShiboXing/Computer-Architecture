@@ -35,7 +35,6 @@ instruction::instruction(int pc_ind, string &ins) {
         else if (_info[0] == "bne") 
             _type = "BU";
     }
-
 }
 
 void instruction::_fill_info(vector<string> &ins) {
