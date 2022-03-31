@@ -13,7 +13,6 @@ void decoder::rename_last() {
 
     // iterate the instruction to check how many new registers are needed
     vector<string> n_regs(4);
-    short reg_needed = 0;
    
     for (int i=3; i>=0; i--) { 
         /* perform renaming backwards,
@@ -25,8 +24,10 @@ void decoder::rename_last() {
         if ((i == 1 && op != "fsd" && op != "bne") || //always use a new register for DEST to eliminate false hazards
                 (is_reg && _reg_lst.find(reg_str) == _reg_lst.end())) { // use a new reg, is not mapped
             
-            if (_free_lst.size() == 0) // not enough free regs, stall!
+            if (_free_lst.size() == 0) {// not enough free regs, stall!
+                cout << "not enough free regs" << endl;
                 return;
+            }
 
             n_regs[i] =  "p" + to_string(_free_lst.back()); // collect all unnamed regs
             _free_lst.pop_back();

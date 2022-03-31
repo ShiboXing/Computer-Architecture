@@ -22,11 +22,23 @@ using namespace std;
 #define RES_CNT unordered_map<string, int>({\
     {"INT", 4},\
     {"LOAD", 2},\
-    {"SAVE", 2},\
+    {"STORE", 2},\
     {"FPADD", 3},\
     {"FPMULT", 4},\
     {"FPDIV", 2},\
     {"BU", 1},\
+})
+
+#define TYPE_MAP unordered_map<string, string>({\
+    {"add", "INT"},\
+    {"addi", "INT"},\
+    {"fld", "LOAD"},\
+    {"fsd", "STORE"},\
+    {"fadd", "FPADD"},\
+    {"fsub", "FPADD"},\
+    {"fmul", "FPMULT"},\
+    {"fdiv", "FPDIV"},\
+    {"bne", "BU"},\
 })
 
 extern int PC;

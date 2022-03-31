@@ -2,7 +2,7 @@
 #include <iostream>
 
 instruction::instruction(int pc_ind, string &ins) {
-    int _pc = pc_ind;
+    _pc = pc_ind;
     int start = 0;
     vector<string> ins_lst;
     is_mem = false;
@@ -25,7 +25,7 @@ instruction::instruction(int pc_ind, string &ins) {
         else if (_info[0] == "fld")
             _type = "LOAD";
         else if (_info[0] == "fsd")
-            _type = "SAVE";
+            _type = "STORE";
         else if (_info[0] == "fadd" || _info[0] == "fsub")
             _type = "FPADD";
         else if (_info[0] == "fmul")

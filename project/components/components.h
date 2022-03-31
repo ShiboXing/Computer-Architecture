@@ -11,7 +11,7 @@ using namespace std;
 class ins_queue {
     public:
         ins_queue() { }
-        // maps PC to {Issue, Execute, Write Result} status
+        // status table, maps PC to {Issue, Execute, Write Result} status 
         unordered_map<int, bool*> st_tb; 
         deque<pair<int, instruction&> > ins_q;
         void add_ins(instruction &ins, int pc_ind);
@@ -21,19 +21,16 @@ class ins_queue {
 
 class res_station {
     private:
-        
-        // vector<res_record*> _int_res;
-        // vector<res_record*> _load_res;
-        // vector<res_record*> _save_res;
-        // vector<res_record*> _fpadd_res;
-        // vector<res_record*> _fpmult_res;
-        // vector<res_record*> _fpdiv_res;
-        // vector<res_record*> _bu_res;
         unordered_map<string, vector<res_record*>*> _board;
-        // unordered_map<int, res_record*> _board;
+        bool find_dep(res_record &rr); // search for dependecies (true data hazards)
     public:
         res_station();
         bool issue(instruction &ins);
+};
+
+class reg_status {
+    public:
+        float regs[32];
 };
 
 class fetcher {

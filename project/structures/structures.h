@@ -19,8 +19,16 @@ class instruction {
 
 class res_record {
     private:
-        string _op;
-        vector<string> _reg_info;
+        //Fi, Fj, Fk, Qj, Qk, Rj, Rk
     public:
-        res_record(string &op_code);
+        string fi;
+        string fj;
+        string fk;
+        string qj;
+        string qk;
+        bool rj;
+        bool rk;
+        string _op;
+        float _imm;
+        res_record(vector<string> &info);
 };

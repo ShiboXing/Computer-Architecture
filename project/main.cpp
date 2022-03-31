@@ -14,6 +14,7 @@ int main() {
     ins_queue ins_tb;
     fetcher f(4, "ins.dat");
     decoder d(ins_tb);
+    res_station rs;
 
     string ins_str;
     while (true) {
@@ -26,6 +27,7 @@ int main() {
                     continue;
                 } else {
                     ins_tb.add_ins(*ins, PC);
+                    rs.issue(*ins);
                     d.rename_last();
                 }
             } else
