@@ -19,16 +19,24 @@ res_record::res_record(vector<string> &info) {
         fj = info[2];
     }
 
-    // fill in Fk (guard for register in bne operands)
-    if ((_op != "addi" && _op != "bne") || (info[2][0] == 'p')) {
+    // fill in Fk (check for register in bne operands)
+    if (_op == "bne") {
+        if (info[2][0] == 'p') {
+            fk = info[2];
+        }
+    } else if (_op != "fld" && _op != "fsd" && info[3][0] == 'p') {
         fk = info[3];
     }
     
     // fill in immediate value
     if (_op == "addi") {
-        _imm = stof(info[3]);
-    } else if ( _op == "fsd" || _op == "fld" || _op == "bne") {
-        if (info[2][0] == 'p') // guard for register in bne operands
+        _imm = stof(info[3]);                   // guard for reg in bne
+    } else if ( _op == "fsd" || _op == "fld" || (_op == "bne" && info[2][0] != 'p')) { 
             _imm = stof(info[2]);
     }   
+
+    // fill in tag
+    if (_op == "bne") {
+        tag = TAG_TB[info[3]];
+    }
 }

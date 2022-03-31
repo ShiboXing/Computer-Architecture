@@ -23,6 +23,7 @@ class res_station {
     private:
         unordered_map<string, vector<res_record*>*> _board;
         bool find_dep(res_record &rr); // search for dependecies (true data hazards)
+        int num_recs;
     public:
         res_station();
         bool issue(instruction &ins);

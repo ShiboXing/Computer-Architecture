@@ -12,7 +12,6 @@ class instruction {
     public:
         int _pc;
         bool is_mem;
-        string _type;
         vector<string> _info;
         instruction(int pc_ind, string &ins);
 };  
@@ -30,5 +29,6 @@ class res_record {
         bool rk;
         string _op;
         float _imm;
+        int tag;
         res_record(vector<string> &info);
 };

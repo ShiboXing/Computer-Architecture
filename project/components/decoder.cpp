@@ -19,20 +19,27 @@ void decoder::rename_last() {
         consider: F0, F0, F4 */
         string reg_str = (*last_ins)[i];
         
-        bool is_reg = (reg_str[0] == 'R' || reg_str[0] == 'F');
-
-        if ((i == 1 && op != "fsd" && op != "bne") || //always use a new register for DEST to eliminate false hazards
-                (is_reg && _reg_lst.find(reg_str) == _reg_lst.end())) { // use a new reg, is not mapped
-            
-            if (_free_lst.size() == 0) {// not enough free regs, stall!
-                cout << "not enough free regs" << endl;
-                return;
+        if (reg_str[0] == 'R' || reg_str[0] == 'F') {
+            // create new mapping here
+            if ((i == 1 && op != "fsd" && op != "bne") // always use a new reg for dest
+                || _reg_lst.find(reg_str) == _reg_lst.end()) { // if mapping not found, assign a new reg
+                
+                /**
+                 * @brief TODO: push back the unused free registers 
+                 * 
+                 */
+                if (_free_lst.size() == 0) {// not enough free regs, stall!
+                    cout << "not enough free regs" << endl;
+                    return;
+                }
+                n_regs[i] =  "p" + to_string(_free_lst.back()); // collect all unnamed regs
+                _free_lst.pop_back();
+            } else { // rename with old mapping
+                n_regs[i] = _reg_lst[reg_str];
             }
-
-            n_regs[i] =  "p" + to_string(_free_lst.back()); // collect all unnamed regs
-            _free_lst.pop_back();
-        } else if (is_reg) // reg, but already has a mapping
-            n_regs[i] = _reg_lst[reg_str];
+        } else if (reg_str[0] == '$') {
+            n_regs[i] = reg_str.substr(1, reg_str.length()-1);
+        }
     }
 
     // execute the renaming, update the register mapping

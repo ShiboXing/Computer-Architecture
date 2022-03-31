@@ -8,12 +8,10 @@ res_station::res_station() {
 
 // return whether successfully issued 
 bool res_station::issue(instruction &ins) {
-    if (_board[ins._type]->size() == RES_CNT[ins._type])
-        return false;  
-    
+
     // check if the corresponding function unit's reservation station is full
     string op = ins._info[0];
-    string type = TYPE_MAP[op];
+    string type = TYPE_MAP[op]; 
     if (_board[type]->size() == RES_CNT[type]) {
         cout << type << " reservation is full" << endl;
         return false;
@@ -25,11 +23,17 @@ bool res_station::issue(instruction &ins) {
 
     // mark the true data dependencies on its reservation station
     find_dep(*tmp);
+
+    // increment count
+    num_recs++;
     
     return true;   
 }
 
-bool res_station::find_dep(res_record  &rr) {
+bool res_station::find_dep(res_record &rr) {
+    /**
+     * TODO: optimize using hashmap
+     */
 
     // iterate the board and find dependency
     for (auto &item: _board) {
@@ -43,8 +47,8 @@ bool res_station::find_dep(res_record  &rr) {
                 rr.rj = false;
             }
         }
-    } 
-    
+    }
+
     return true;
 }
 

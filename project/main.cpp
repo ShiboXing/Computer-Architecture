@@ -22,13 +22,13 @@ int main() {
         while (i < NF) {
             if ((ins_str = f.fetch_next()).length()) {
                 instruction *ins = new instruction(PC, ins_str);
-                if (ins->is_mem) {
+                if (ins->is_mem) { // load memory content and skip
                     delete ins;
                     continue;
-                } else {
+                } else { // handle instructions
                     ins_tb.add_ins(*ins, PC);
-                    rs.issue(*ins);
                     d.rename_last();
+                    rs.issue(*ins);
                 }
             } else
                 break;
