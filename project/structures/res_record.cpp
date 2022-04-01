@@ -1,9 +1,11 @@
 #include "structures.h"
 
-res_record::res_record(vector<string> &info) {
+res_record::res_record(vector<string> &info, int pc_ind) {
 
-    // fill op code
+    
+    _pc = pc_ind;
     _op = info[0];
+    qj = qk = NULL;
 
     // fill in Fi  
     if (_op != "bne" && _op != "fsd") { 

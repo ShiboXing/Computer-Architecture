@@ -23,12 +23,12 @@ class res_record {
         string fi;
         string fj;
         string fk;
-        string qj;
-        string qk;
-        bool rj;
-        bool rk;
+        res_record *qj;
+        res_record *qk;
         string _op;
         float _imm;
+        int _pc;
         int tag;
-        res_record(vector<string> &info);
+
+        res_record(vector<string> &info, int pc_ind);
 };
