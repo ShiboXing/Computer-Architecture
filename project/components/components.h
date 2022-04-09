@@ -13,10 +13,10 @@ class ins_queue {
         ins_queue() { }
         // status table, maps PC to {Issue, Execute, Write Result} status 
         unordered_map<int, bool*> st_tb; 
-        deque<pair<int, instruction&> > ins_q;
-        void add_ins(instruction &ins, int pc_ind);
-        
-        // instruction& operator[](int);
+        deque<pair<int, instruction&>> ins_q;
+        deque<instruction*> issue_q;
+        void add_ins(instruction &ins);
+        instruction *pop_unissued();
 };
 
 class res_station {
@@ -38,12 +38,7 @@ class fetcher {
     private:
         ifstream *ins_stream;
     public:
-        int _fn;
-        fetcher(int fn, string fname) {
-            _fn = fn;
-            ins_stream = new ifstream(fname);
-        }
-        
+        fetcher(string fname); 
         string fetch_next();
 };
 
@@ -54,5 +49,5 @@ class decoder {
         ins_queue &ins_tb;
     public:
         decoder(ins_queue &ins_tb_ref);
-        void rename_last();
+        void rename(instruction &ins);
 };

@@ -12,27 +12,43 @@ unordered_map<int, int> MEM;
 int main() {
 
     ins_queue ins_tb;
-    fetcher f(4, "ins.dat");
-    decoder d(ins_tb);
     res_station rs;
+    fetcher f("ins1.dat");
+    decoder d(ins_tb);
 
-    string ins_str;
     while (true) {
-        int i = 0;
-        while (i < NF) {
+        bool ended = true;
+
+        // decode, issue
+        for (int i=0; i<NW; i++) {
+            if (ins_tb.issue_q.size()) {
+                ended = false;  
+                instruction *ins = ins_tb.pop_unissued();
+                d.rename(*ins);
+                rs.issue(*ins);
+            }
+        }        
+        
+        // fetch
+        for (int i=0; i<NF; i++) {
+            string ins_str;
             if ((ins_str = f.fetch_next()).length()) {
+                ended = false;
                 instruction *ins = new instruction(PC, ins_str);
                 if (ins->is_mem) { // load memory content and skip
                     delete ins;
-                    continue;
+                    break;
                 } else { // handle instructions
-                    ins_tb.add_ins(*ins, PC);
-                    d.rename_last();
-                    rs.issue(*ins);
+                    ins_tb.add_ins(*ins);
                 }
-            } else
+            } else {
                 break;
-            i++;
+            }
+        }
+
+        // all stages are idle
+        if (ended) {
+            break;
         }
     }
 

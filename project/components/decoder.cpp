@@ -6,9 +6,9 @@ decoder::decoder(ins_queue &ins_tb_ref) : ins_tb(ins_tb_ref){
     }
 }
 
-void decoder::rename_last() {
+void decoder::rename(instruction &ins) {
     // get the last register
-    auto last_ins = &(ins_tb.ins_q.front().second._info);
+    auto last_ins = &(ins._info);
     string op = (*last_ins)[0];
 
     // iterate the instruction to check how many new registers are needed

@@ -5,6 +5,7 @@
 using namespace std;
 
 #define NF 4
+#define NW 4
 
 #define INS_LAT unordered_map<string, int>({\
     {"add", 1},\

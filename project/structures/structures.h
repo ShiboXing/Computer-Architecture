@@ -29,6 +29,7 @@ class res_record {
         float _imm;
         int _pc;
         int tag;
+        int cycles_left;
 
         res_record(vector<string> &info, int pc_ind);
 };

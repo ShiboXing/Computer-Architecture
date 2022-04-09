@@ -42,7 +42,7 @@ bool res_station::find_dep(res_record &rr) {
                 if (rr.qj == NULL || tmp_rec->_pc > rr.qj->_pc) {
                     rr.qj = tmp_rec;
                 }
-            }
+            } 
             if (tmp_rec->fi == rr.fk) {
                 rr.qk = tmp_rec;
             }

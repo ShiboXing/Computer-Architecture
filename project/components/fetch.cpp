@@ -8,8 +8,15 @@ string fetcher::fetch_next() {
     if (ins_stream->is_open()) {
         if (!getline(*ins_stream, line))
             ins_stream->close();
+        else
+            PC++;
+    } else {
+        cout << "fetcher file stream closed!" << endl;
     }
-    PC++;
 
     return line;
+}
+
+fetcher::fetcher(string fname) {
+    ins_stream = new ifstream(fname);
 }

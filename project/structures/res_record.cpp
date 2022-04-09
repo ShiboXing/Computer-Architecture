@@ -2,7 +2,6 @@
 
 res_record::res_record(vector<string> &info, int pc_ind) {
 
-    
     _pc = pc_ind;
     _op = info[0];
     qj = qk = NULL;
@@ -41,4 +40,7 @@ res_record::res_record(vector<string> &info, int pc_ind) {
     if (_op == "bne") {
         tag = TAG_TB[info[3]];
     }
+
+    // fill in latency
+    cycles_left = INS_LAT[_op];
 }
