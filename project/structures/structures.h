@@ -32,4 +32,6 @@ class res_record {
 
         res_record(vector<string> &info, int pc_ind);
         res_record();
+
+        bool execute();
 };

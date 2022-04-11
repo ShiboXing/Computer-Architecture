@@ -7,6 +7,8 @@
 
 using namespace std;
 
+class back_writer;
+
 // bool status: Issue, Read op, Exec Completed, Write Result
 class ins_queue {
     public:
@@ -28,7 +30,7 @@ class res_station {
     public:
         res_station();
         bool issue(instruction &ins);
-        void execute();
+        void execute(back_writer &bck_wrter);
 };
 
 class reg_status {
@@ -53,3 +55,21 @@ class decoder {
         decoder(ins_queue &ins_tb_ref);
         void rename(instruction &ins);
 };
+
+// common data bus
+class CDB {
+    private:
+        int bandwidth;
+        deque<res_record*> inflight;
+};
+
+// write-back stage
+class back_writer {
+    private:
+        deque<res_record*> _buffer;
+    public:
+        void add_result(res_record &rr);
+        
+};
+
+

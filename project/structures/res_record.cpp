@@ -50,3 +50,34 @@ res_record::res_record() {
     cycles_left = 0;
     qj = qk = NULL;
 }
+
+bool res_record::execute() {
+      
+    // dependencies are not resolved
+    if (qj != NULL || qk != NULL) {
+        return false;
+    }
+
+    cycles_left--;
+    if (cycles_left == 0) {
+        float fi_num = stof(fi);
+        float fj_num = stof(fj);
+        float fk_num = stof(fk);
+
+        if (_op == "add" || _op == "fadd") {
+            fi_num = fj_num + fk_num;
+        } else if (_op == "addi" ) {
+            fi_num = fj_num + _imm;
+        } else if (_op == "fsub") {
+            fi_num = fj_num - fk_num;
+        } else if (_op == "fmul") {
+            fi_num = fj_num * fk_num;
+        } else if (_op == "fdiv") {
+            fi_num = fj_num / fk_num;
+        } else if (_op == "fld") {
+            fi_num = MEM[fj_num + _imm];
+        }
+
+        fi = to_string(fi_num);
+    }
+}
