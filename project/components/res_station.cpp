@@ -41,11 +41,13 @@ bool res_station::_find_dep(res_record &rr) {
     return true;
 }
 
-void res_station::execute() {
+void res_station::execute(back_writer &bck_wrter) {
     for (auto item : _board) {
         auto station = item.second;
-        for (res_record rr : station) {
-            
+        for (res_record *rr : *station) {
+            if (rr->execute()) {
+                bck_wrter.add_result(*rr);
+            }
         }
     }
 }

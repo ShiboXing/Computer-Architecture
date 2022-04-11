@@ -33,7 +33,7 @@ class res_station {
         void execute(back_writer &bck_wrter);
 };
 
-class reg_status {
+class regs {
     public:
         float regs[32];
 };
@@ -50,9 +50,8 @@ class decoder {
     private:
         vector<int> _free_lst;
         unordered_map<string, string> _reg_lst;
-        ins_queue &ins_tb;
     public:
-        decoder(ins_queue &ins_tb_ref);
+        decoder();
         void rename(instruction &ins);
 };
 
@@ -61,15 +60,15 @@ class CDB {
     private:
         int bandwidth;
         deque<res_record*> inflight;
-};
-
-// write-back stage
-class back_writer {
-    private:
-        deque<res_record*> _buffer;
     public:
-        void add_result(res_record &rr);
+        CDB(int bw);
         
 };
 
-
+class ROB {
+    private: 
+        int _max_entries;
+        deque<res_record*> entries;
+    public:
+        void add_entry(res_record &rr);
+};

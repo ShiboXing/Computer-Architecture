@@ -35,3 +35,12 @@ class res_record {
 
         bool execute();
 };
+
+// write-back stage
+class back_writer {
+    private:
+        deque<res_record*> _buffer;
+    public:
+        void add_result(res_record &rr);
+        
+};

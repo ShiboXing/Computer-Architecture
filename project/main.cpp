@@ -5,18 +5,28 @@
 using namespace std;
 
 int PC = 0;
+float REGS[32] = { 0 };
 unordered_map<string, int> TAG_TB;
 unordered_map<int, int> MEM;
 
 int main() {
 
     ins_queue ins_tb;
+    CDB cdb(NB);
+    back_writer bck_wrter;
     res_station rs;
     fetcher f("ins1.dat");
-    decoder d(ins_tb);
+    decoder d;
+
 
     while (true) {
         bool ended = true;
+
+        // write back
+        
+
+        // execute 
+        rs.execute(bck_wrter);
 
         // decode, issue
         for (int i=0; i<NW; i++) {
@@ -45,7 +55,7 @@ int main() {
             }
         }
 
-        // all stages are idle
+        // program ends if all stages are idle
         if (ended) {
             break;
         }

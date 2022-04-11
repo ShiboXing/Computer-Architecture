@@ -1,6 +1,6 @@
 #include "components.h"
 
-decoder::decoder(ins_queue &ins_tb_ref) : ins_tb(ins_tb_ref){
+decoder::decoder() {
     for (int i=31; i>=0; i--) {
        _free_lst.push_back(i);
     }

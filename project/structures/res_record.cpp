@@ -79,5 +79,9 @@ bool res_record::execute() {
         }
 
         fi = to_string(fi_num);
+
+        return true;
     }
+    
+    return false;
 }

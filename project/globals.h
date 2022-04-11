@@ -6,6 +6,9 @@ using namespace std;
 
 #define NF 4
 #define NW 4
+#define NR 16
+#define NB 4
+
 
 #define INS_LAT unordered_map<string, int>({\
     {"add", 1},\
@@ -33,15 +36,16 @@ using namespace std;
 #define TYPE_MAP unordered_map<string, string>({\
     {"add", "INT"},\
     {"addi", "INT"},\
-    {"fld", "LOAD"},\
-    {"fsd", "STORE"},\
     {"fadd", "FPADD"},\
     {"fsub", "FPADD"},\
     {"fmul", "FPMULT"},\
     {"fdiv", "FPDIV"},\
     {"bne", "BU"},\
+    {"fld", "LOAD"},\
+    {"fsd", "STORE"},\
 })
 
 extern int PC;
+extern float REGS[32];
 extern unordered_map<string, int> TAG_TB; // map tag string to PC addr
 extern unordered_map<int, int> MEM;
