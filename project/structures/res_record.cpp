@@ -6,7 +6,7 @@ res_record::res_record(vector<string> &info, int pc_ind) {
     _op = info[0];
     qj = qk = NULL;
 
-    // fill in Fi  
+    // fill in Fi 
     if (_op != "bne" && _op != "fsd") { 
         fi = info[1];
     }
@@ -43,4 +43,10 @@ res_record::res_record(vector<string> &info, int pc_ind) {
 
     // fill in latency
     cycles_left = INS_LAT[_op];
+}
+
+// empty res station record
+res_record::res_record() {
+    cycles_left = 0;
+    qj = qk = NULL;
 }

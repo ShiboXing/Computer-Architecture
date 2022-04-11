@@ -22,11 +22,13 @@ class ins_queue {
 class res_station {
     private:
         unordered_map<string, vector<res_record*>*> _board;
-        bool find_dep(res_record &rr); // search for dependecies (true data hazards)
-        int num_recs;
+        unordered_map<string, res_record*> _deps; // dependencies
+        bool _find_dep(res_record &rr); // search for dependecies (true data hazards)
+        bool _execute_rec(res_record &rr);
     public:
         res_station();
         bool issue(instruction &ins);
+        void execute();
 };
 
 class reg_status {

@@ -13,12 +13,11 @@ class instruction {
         int _pc;
         bool is_mem;
         vector<string> _info;
+
         instruction(int pc_ind, string &ins);
 };  
 
 class res_record {
-    private:
-        //Fi, Fj, Fk, Qj, Qk, Rj, Rk
     public:
         string fi;
         string fj;
@@ -32,4 +31,5 @@ class res_record {
         int cycles_left;
 
         res_record(vector<string> &info, int pc_ind);
+        res_record();
 };

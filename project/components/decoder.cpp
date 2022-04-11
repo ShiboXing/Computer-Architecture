@@ -13,6 +13,7 @@ void decoder::rename(instruction &ins) {
 
     // iterate the instruction to check how many new registers are needed
     vector<string> n_regs(4);
+    vector<int> cached_free_regs;
    
     for (int i=3; i>=0; i--) { 
         /* perform renaming backwards,
@@ -29,15 +30,18 @@ void decoder::rename(instruction &ins) {
                  * 
                  */
                 if (_free_lst.size() == 0) {// not enough free regs, stall!
-                    cout << "not enough free regs" << endl;
+                    cout << "not enough free regs, reclaiming cached free regs" << "(" << cached_free_regs.size() << ")" << endl;
+                    _free_lst.insert(_free_lst.end(), cached_free_regs.begin(), cached_free_regs.end());
+                    sort(_free_lst.begin(), _free_lst.end());
                     return;
                 }
                 n_regs[i] =  "p" + to_string(_free_lst.back()); // collect all unnamed regs
+                cached_free_regs.push_back(_free_lst.back());
                 _free_lst.pop_back();
             } else { // rename with old mapping
                 n_regs[i] = _reg_lst[reg_str];
             }
-        } else if (reg_str[0] == '$') {
+        } else if (reg_str[0] == '$') { // dollar sign is constant value
             n_regs[i] = reg_str.substr(1, reg_str.length()-1);
         }
     }
