@@ -1,10 +1,21 @@
 #include "structures.h"
 
-res_record::res_record(vector<string> &info, int pc_ind) {
+// empty res station record
+res_record::res_record() {
+    qj = qk = NULL;
+    fi = fj = fk = _op =  "";
+    _imm = _result = 0;
+    valid = true;
+    written_back = committed = false;
+}
+
+res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
 
     _pc = pc_ind;
     _op = info[0];
     qj = qk = NULL;
+    valid = true;
+    written_back = committed = false;
 
     // fill in Fi 
     if (_op != "bne" && _op != "fsd") { 
@@ -45,20 +56,16 @@ res_record::res_record(vector<string> &info, int pc_ind) {
     cycles_left = INS_LAT[_op];
 }
 
-// empty res station record
-res_record::res_record() {
-    cycles_left = 0;
-    qj = qk = NULL;
-}
-
 bool res_record::execute() {
       
     // dependencies are not resolved
-    if (qj != NULL || qk != NULL) {
+    if (qj != NULL || qk != NULL || !valid) {
         return false;
     }
 
-    cycles_left--;
+    if (cycles_left > 0) // guard for empty record
+        cycles_left--;
+
     if (cycles_left == 0) {
         float fi_num = stof(fi);
         float fj_num = stof(fj);

@@ -17,4 +17,4 @@ fadd F0, F0, F4
 fsd F0, 0(R2)
 addi R1, R1, -8
 addi R2, R2, -8
-bne R1,$0, loop
+bne R1, $0, loop

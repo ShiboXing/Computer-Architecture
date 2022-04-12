@@ -7,7 +7,8 @@
 
 using namespace std;
 
-class back_writer;
+class CDB;
+class ROB;
 
 // bool status: Issue, Read op, Exec Completed, Write Result
 class ins_queue {
@@ -25,17 +26,12 @@ class res_station {
     private:
         unordered_map<string, vector<res_record*>*> _board;
         unordered_map<string, res_record*> _deps; // dependencies
-        bool _find_dep(res_record &rr); // search for dependecies (true data hazards)
+        bool _find_dep(res_record &rr, ROB &rob); // search for dependecies (true data hazards)
         bool _execute_rec(res_record &rr);
     public:
         res_station();
-        bool issue(instruction &ins);
-        void execute(back_writer &bck_wrter);
-};
-
-class regs {
-    public:
-        float regs[32];
+        bool issue(instruction &ins, ROB &rob);
+        void execute(CDB &bus);
 };
 
 class fetcher {
@@ -62,13 +58,15 @@ class CDB {
         deque<res_record*> inflight;
     public:
         CDB(int bw);
-        
+        bool add_entry(res_record &rr);
 };
 
 class ROB {
     private: 
         int _max_entries;
-        deque<res_record*> entries;
     public:
+        deque<res_record*> entries;
+        ROB(int nr);
+        bool is_full();
         void add_entry(res_record &rr);
 };

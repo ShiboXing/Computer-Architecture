@@ -1,0 +1,6 @@
+addi p1 p0 24
+addi p2 p0 124
+fmul p5 p4 p3 
+fadd p7 p5 p6
+addi p8 p1 -8
+addi p9 p2 -8

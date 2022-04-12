@@ -12,12 +12,11 @@ unordered_map<int, int> MEM;
 int main() {
 
     ins_queue ins_tb;
-    CDB cdb(NB);
-    back_writer bck_wrter;
+    CDB bus(NB);
+    ROB reorder_buffer(NR);
     res_station rs;
-    fetcher f("ins1.dat");
+    fetcher f("test_files/ins2.dat");
     decoder d;
-
 
     while (true) {
         bool ended = true;
@@ -26,15 +25,17 @@ int main() {
         
 
         // execute 
-        rs.execute(bck_wrter);
+        // rs.execute(bus);
 
         // decode, issue
         for (int i=0; i<NW; i++) {
             if (ins_tb.issue_q.size()) {
                 ended = false;  
-                instruction *ins = ins_tb.pop_unissued();
-                d.rename(*ins);
-                rs.issue(*ins);
+                if (!reorder_buffer.is_full()) {
+                    instruction *ins = ins_tb.pop_unissued();
+                    d.rename(*ins);
+                    rs.issue(*ins, reorder_buffer);
+                }
             }
         }        
         

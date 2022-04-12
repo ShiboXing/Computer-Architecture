@@ -26,21 +26,16 @@ class res_record {
         res_record *qk;
         string _op;
         float _imm;
+        float _result;
         int _pc;
         int tag;
         int cycles_left;
+        bool valid;
+        bool written_back;
+        bool committed;
 
         res_record(vector<string> &info, int pc_ind);
         res_record();
 
         bool execute();
-};
-
-// write-back stage
-class back_writer {
-    private:
-        deque<res_record*> _buffer;
-    public:
-        void add_result(res_record &rr);
-        
 };
