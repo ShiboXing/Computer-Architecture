@@ -6,12 +6,12 @@ string fetcher::fetch_next() {
     string line;
     
     if (ins_stream->is_open()) {
-        if (!getline(*ins_stream, line))
+        if (!getline(*ins_stream, line)) {
             ins_stream->close();
-        else
+            cout << "fetch stream is closed at PC " << PC << endl;
+        } else {
             PC++;
-    } else {
-        cout << "fetcher file stream closed!" << endl;
+        }
     }
 
     return line;

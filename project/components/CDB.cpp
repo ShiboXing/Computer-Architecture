@@ -12,3 +12,9 @@ bool CDB::add_entry(res_record &rr) {
 
     return false;
 }
+
+void CDB::flush() {
+    while (inflight.size()) {
+        inflight.pop_back();
+    }
+}

@@ -18,6 +18,8 @@ class instruction {
 };  
 
 class res_record {
+    private:
+        float _decode(string reg, res_record *ref);
     public:
         string fi;
         string fj;
@@ -30,7 +32,7 @@ class res_record {
         int _pc;
         int tag;
         int cycles_left;
-        bool valid;
+        bool executed;
         bool written_back;
         bool committed;
 

@@ -11,6 +11,7 @@ components/ins_table.o \
 components/res_station.o \
 components/CDB.o \
 components/ROB.o\
+components/back_writer.o
 
 default: $(OBJS)
 	$(CC) -o main $(OBJS)

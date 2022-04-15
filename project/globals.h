@@ -8,7 +8,7 @@ using namespace std;
 #define NW 4
 #define NR 16
 #define NB 4
-
+#define REG_SIZE 32
 
 #define INS_LAT unordered_map<string, int>({\
     {"add", 1},\
@@ -46,6 +46,9 @@ using namespace std;
 })
 
 extern int PC;
+extern int CYCLE;
 extern float REGS[32];
 extern unordered_map<string, int> TAG_TB; // map tag string to PC addr
 extern unordered_map<int, int> MEM;
+
+

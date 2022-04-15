@@ -9,15 +9,11 @@ using namespace std;
 
 class CDB;
 class ROB;
+class back_writer;
 
-// bool status: Issue, Read op, Exec Completed, Write Result
 class ins_queue {
     public:
-        ins_queue() { }
-        // status table, maps PC to {Issue, Execute, Write Result} status 
-        unordered_map<int, bool*> st_tb; 
-        deque<pair<int, instruction&>> ins_q;
-        deque<instruction*> issue_q;
+        deque<instruction*> ins_q;
         void add_ins(instruction &ins);
         instruction *pop_unissued();
 };
@@ -31,7 +27,7 @@ class res_station {
     public:
         res_station();
         bool issue(instruction &ins, ROB &rob);
-        void execute(CDB &bus);
+        bool execute(back_writer &bck_wrter);
 };
 
 class fetcher {
@@ -44,11 +40,21 @@ class fetcher {
 
 class decoder {
     private:
+        ofstream *decode_stream;
         vector<int> _free_lst;
         unordered_map<string, string> _reg_lst;
+        void _output_mapping(vector<string> &info);
     public:
         decoder();
         void rename(instruction &ins);
+};
+
+class back_writer {
+    private:
+        deque<res_record*> entries;
+    public:
+        void add_entry(res_record &rr);
+        bool write_back(CDB &bus);
 };
 
 // common data bus
@@ -59,6 +65,7 @@ class CDB {
     public:
         CDB(int bw);
         bool add_entry(res_record &rr);
+        void flush();
 };
 
 class ROB {
@@ -68,5 +75,6 @@ class ROB {
         deque<res_record*> entries;
         ROB(int nr);
         bool is_full();
+        bool commit(CDB &bus);
         void add_entry(res_record &rr);
 };

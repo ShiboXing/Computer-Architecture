@@ -5,7 +5,7 @@ res_station::res_station() {
         _board[item.first] = new vector<res_record*>();
         for (int i=0; i<item.second; i++) {
             res_record *tmp = new res_record();
-            tmp->valid = false;
+            tmp->executed = tmp->written_back = tmp->committed = true; // mark for replacement
             _board[item.first]->push_back(tmp);
         }
     }
@@ -20,8 +20,11 @@ bool res_station::issue(instruction &ins, ROB &rob) {
 
     for (int i=0; i<_board[type]->size(); i++) {
         res_record *r_rec = (*_board[type])[i];
-        if (!r_rec->valid) { // empty res_record
-            delete r_rec; // delete old res_record
+        if (r_rec->executed) { // empty res_record
+
+            if (r_rec->committed) // delete ONLY when commited, for it could be in other components
+                delete r_rec;
+
             res_record* tmp = new res_record(ins._info, ins._pc);
             (*_board[type])[i] = tmp; 
             
@@ -55,12 +58,18 @@ bool res_station::_find_dep(res_record &rr, ROB &rob) {
     return true;
 }
 
-void res_station::execute(CDB &bus) {
+bool res_station::execute(back_writer &bck_wrter) {
+    bool has_records = false;
+
     for (auto item : _board) {
         auto station = item.second;
         for (res_record *rr : *station) {
-            rr->execute();
+            has_records |= !rr->executed;
+            if (rr->execute())
+                bck_wrter.add_entry(*rr);
         }
     }
+    
+    return has_records;
 }
 

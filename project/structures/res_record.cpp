@@ -5,8 +5,7 @@ res_record::res_record() {
     qj = qk = NULL;
     fi = fj = fk = _op =  "";
     _imm = _result = 0;
-    valid = true;
-    written_back = committed = false;
+    executed = written_back = committed = false;
 }
 
 res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
@@ -14,7 +13,6 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     _pc = pc_ind;
     _op = info[0];
     qj = qk = NULL;
-    valid = true;
     written_back = committed = false;
 
     // fill in Fi 
@@ -44,7 +42,7 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     if (_op == "addi") {
         _imm = stof(info[3]);                   // guard for reg in bne
     } else if ( _op == "fsd" || _op == "fld" || (_op == "bne" && info[2][0] != 'p')) { 
-            _imm = stof(info[2]);
+        _imm = stof(info[2]);
     }   
 
     // fill in tag
@@ -56,38 +54,48 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     cycles_left = INS_LAT[_op];
 }
 
+float res_record::_decode(string reg, res_record *ref) {
+    int reg_num;
+    if (reg[0] == 'p') // decode if it is a physical register 
+        reg_num = stoi(reg.substr(1, reg.size()-1));
+    else 
+        return .0;
+    
+    // check if dependecy register is already committed
+    if (ref == NULL || !ref->committed)
+        return REGS[reg_num];
+    else
+        return ref->_result;
+}  
+
 bool res_record::execute() {
       
-    // dependencies are not resolved
-    if (qj != NULL || qk != NULL || !valid) {
+    // dependencies are not resolved or has executed
+    if (executed || (qj && !qj->written_back) || (qk && !qk->written_back)) {
         return false;
     }
 
-    if (cycles_left > 0) // guard for empty record
-        cycles_left--;
-
     if (cycles_left == 0) {
-        float fi_num = stof(fi);
-        float fj_num = stof(fj);
-        float fk_num = stof(fk);
+        float fj_num = _decode(fj, qj);
+        float fk_num = _decode(fk, qk);
 
         if (_op == "add" || _op == "fadd") {
-            fi_num = fj_num + fk_num;
+            _result = fj_num + fk_num;
         } else if (_op == "addi" ) {
-            fi_num = fj_num + _imm;
+            _result = fj_num + _imm;
         } else if (_op == "fsub") {
-            fi_num = fj_num - fk_num;
+            _result = fj_num - fk_num;
         } else if (_op == "fmul") {
-            fi_num = fj_num * fk_num;
+            _result = fj_num * fk_num;
         } else if (_op == "fdiv") {
-            fi_num = fj_num / fk_num;
+            _result = fj_num / fk_num;
         } else if (_op == "fld") {
-            fi_num = MEM[fj_num + _imm];
+            _result = MEM[fj_num + _imm];
         }
-
-        fi = to_string(fi_num);
-
-        return true;
+    
+        return executed = true;
+    } else {
+        cycles_left--;
     }
     
     return false;
