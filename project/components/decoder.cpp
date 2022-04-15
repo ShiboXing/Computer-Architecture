@@ -4,6 +4,19 @@ decoder::decoder() {
     for (int i=31; i>=0; i--) {
        _free_lst.push_back(i);
     }
+
+    decode_stream = new ofstream("decode.out");
+}
+
+void decoder::_output_mapping(vector<string> &info) {
+    for (string i : info) {
+        *decode_stream << i << " ";
+    }
+    *decode_stream << "    free_list: ";
+    for (int f : _free_lst) {
+        *decode_stream << f << " ";
+    }
+    *decode_stream << endl;
 }
 
 void decoder::rename(instruction &ins) {
@@ -15,7 +28,7 @@ void decoder::rename(instruction &ins) {
     vector<string> n_regs(4);
     vector<int> cached_free_regs;
    
-    for (int i=3; i>=0; i--) { 
+    for (int i=3; i>=1; i--) { 
         /* perform renaming backwards,
         consider: F0, F0, F4 */
         string reg_str = (*last_ins)[i];
@@ -24,20 +37,23 @@ void decoder::rename(instruction &ins) {
             // create new mapping here
             if ((i == 1 && op != "fsd" && op != "bne") // always use a new reg for dest
                 || _reg_lst.find(reg_str) == _reg_lst.end()) { // if mapping not found, assign a new reg
-                
-                /**
-                 * @brief TODO: push back the unused free registers 
-                 * 
-                 */
-                if (_free_lst.size() == 0) {// not enough free regs, stall!
+
+                // not enough free regs, stall!
+                if (_free_lst.size() == 0) {
                     cout << "not enough free regs, reclaiming cached free regs" << "(" << cached_free_regs.size() << ")" << endl;
+                    // push back unused free registers
                     _free_lst.insert(_free_lst.end(), cached_free_regs.begin(), cached_free_regs.end());
-                    sort(_free_lst.begin(), _free_lst.end());
+                    /**
+                     * TODO: need optimization
+                     */
+                    sort(_free_lst.begin(), _free_lst.end(), greater<int>()); 
                     return;
                 }
+
                 n_regs[i] =  "p" + to_string(_free_lst.back()); // collect all unnamed regs
                 cached_free_regs.push_back(_free_lst.back());
                 _free_lst.pop_back();
+                
             } else { // rename with old mapping
                 n_regs[i] = _reg_lst[reg_str];
             }
@@ -47,10 +63,20 @@ void decoder::rename(instruction &ins) {
     }
 
     // execute the renaming, update the register mapping
-    for (int i=3; i>=0; i--) {
+    for (int i=3; i>=1; i--) {
         if (n_regs[i] != "") {
-            _reg_lst[string((*last_ins)[i])] = n_regs[i];
+            string *old_reg = &_reg_lst[string((*last_ins)[i])];
+            
+            // free the old register when it is replaced by a new mapping
+            if (*old_reg != "" && *old_reg != n_regs[i]) { 
+                int old_reg_num = stoi(old_reg->substr(1, old_reg->length()-1));
+                _free_lst.push_back(old_reg_num);
+            }
+
+            *old_reg = n_regs[i];
             (*last_ins)[i] = n_regs[i];
         }
     }
+    sort(_free_lst.begin(), _free_lst.end(), greater<int>()); 
+    _output_mapping(*last_ins);
 }
