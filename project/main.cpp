@@ -20,7 +20,6 @@ int main() {
     decoder d;
     fetcher f("test_files/ins2.dat");
     ins_queue ins_tb;
-    ofstream REG_STREAM("regs.out");
     ofstream MEM_STREAM("mem.out");
 
     bool program_started = false;
@@ -85,19 +84,14 @@ int main() {
         }        
     }
 
-    // print out registers
-    REG_STREAM << "register content: " << endl;
-    for (int i=0; i<REG_SIZE; i++) {
-        REG_STREAM << "p" << i << ":  " << REGS[i] << endl;
-    }
-
+    // print out
+    d.print_regs();
+    
     // print out memory
     MEM_STREAM << "memory content: " << endl;
     for (auto itm : MEM) {
         MEM_STREAM << itm.first << ":  " << itm.second << endl;
     }
-    
-    REG_STREAM.close();
     MEM_STREAM.close();
     
     return 0; 

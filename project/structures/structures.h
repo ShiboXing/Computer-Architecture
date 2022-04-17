@@ -12,8 +12,10 @@ class instruction {
     public:
         int _pc;
         bool is_mem;
+        string initialize_operand1;
+        string initialize_operand2;
         vector<string> _info;
-
+        
         instruction(int pc_ind, string &ins);
 };  
 
@@ -24,6 +26,8 @@ class res_record {
         string fi;
         string fj;
         string fk;
+        string initialize_operand1;
+        string initialize_operand2;
         res_record *qj;
         res_record *qk;
         string _op;
@@ -36,7 +40,7 @@ class res_record {
         bool written_back;
         bool committed;
 
-        res_record(vector<string> &info, int pc_ind);
+        res_record(vector<string> &info, int pc_ind, string initialize_operand1, string initialize_operand2);
         res_record();
 
         bool execute();

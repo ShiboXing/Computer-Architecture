@@ -2,6 +2,7 @@
 #include <iostream>
 
 instruction::instruction(int pc_ind, string &ins) {
+    initialize_operand1 = initialize_operand2 = "";
     _pc = pc_ind;
     int start = 0;
     vector<string> ins_lst;

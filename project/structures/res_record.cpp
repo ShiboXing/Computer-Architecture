@@ -3,17 +3,19 @@
 // empty res station record
 res_record::res_record() {
     qj = qk = NULL;
-    fi = fj = fk = _op =  "";
+    fi = fj = fk = _op =  initialize_operand1 = initialize_operand2 = "";
     _imm = _result = 0;
     executed = written_back = committed = false;
 }
 
-res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
+res_record::res_record(vector<string> &info, int pc_ind, string initialize_operand1, string initialize_operand2) : res_record() {
 
     _pc = pc_ind;
     _op = info[0];
     qj = qk = NULL;
     written_back = committed = false;
+    this->initialize_operand1 = initialize_operand1;
+    this->initialize_operand2 = initialize_operand2;
 
     // fill in Fi 
     if (_op != "bne" && _op != "fsd") { 
@@ -56,7 +58,7 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
 
 float res_record::_decode(string reg, res_record *ref) {
     int reg_num;
-    if (reg[0] == 'p') // decode if it is a physical register 
+    if (reg[0] == 'p' && reg != initialize_operand1 && reg != initialize_operand2) // decode if it is a physical register 
         reg_num = stoi(reg.substr(1, reg.size()-1));
     else 
         return .0;

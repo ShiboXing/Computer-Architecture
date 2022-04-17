@@ -1,3 +1,6 @@
+# test cases:
+*.dat
+
 # Prerequisites
 *.d
 

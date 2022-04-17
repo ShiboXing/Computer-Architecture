@@ -46,6 +46,7 @@ class decoder {
         void _output_mapping(vector<string> &info);
     public:
         decoder();
+        void print_regs();
         void rename(instruction &ins);
 };
 

@@ -43,9 +43,6 @@ void decoder::rename(instruction &ins) {
                     cout << "not enough free regs, reclaiming cached free regs" << "(" << cached_free_regs.size() << ")" << endl;
                     // push back unused free registers
                     _free_lst.insert(_free_lst.end(), cached_free_regs.begin(), cached_free_regs.end());
-                    /**
-                     * TODO: need optimization
-                     */
                     sort(_free_lst.begin(), _free_lst.end(), greater<int>()); 
                     return;
                 }
@@ -67,10 +64,19 @@ void decoder::rename(instruction &ins) {
         if (n_regs[i] != "") {
             string *old_reg = &_reg_lst[string((*last_ins)[i])];
             
-            // free the old register when it is replaced by a new mapping
+            /**
+             * TODO: for new register's mapping, mark it for zero initialization
+             */
+            // free the old register when it is replaced by a new mapping (only happens to current dest)
             if (*old_reg != "" && *old_reg != n_regs[i]) { 
                 int old_reg_num = stoi(old_reg->substr(1, old_reg->length()-1));
                 _free_lst.push_back(old_reg_num);
+            } else if (*old_reg == "" && i != 1) {
+                if (ins.initialize_operand1 == "") {
+                    ins.initialize_operand1 = n_regs[i];
+                } else {
+                    ins.initialize_operand2 = n_regs[i];
+                }
             }
 
             *old_reg = n_regs[i];
@@ -79,4 +85,16 @@ void decoder::rename(instruction &ins) {
     }
     sort(_free_lst.begin(), _free_lst.end(), greater<int>()); 
     _output_mapping(*last_ins);
+}
+
+void decoder::print_regs() {
+
+    ofstream reg_stream("regs.out");
+    // print out registers
+    reg_stream << "register content: " << endl;
+    for (auto itm : _reg_lst) {
+        int reg = stoi(itm.second.substr(1, itm.second.length()-1));
+        reg_stream << "p" << reg << "(" << itm.first << "):  " << REGS[reg] << endl;
+    }
+
 }

@@ -25,7 +25,7 @@ bool res_station::issue(instruction &ins, ROB &rob) {
             if (r_rec->committed) // delete ONLY when commited, for it could be in other components
                 delete r_rec;
 
-            res_record* tmp = new res_record(ins._info, ins._pc);
+            res_record* tmp = new res_record(ins._info, ins._pc, ins.initialize_operand1, ins.initialize_operand2);
             (*_board[type])[i] = tmp; 
             
             // mark the true data dependencies on its reservation station
