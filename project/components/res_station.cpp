@@ -22,35 +22,19 @@ bool res_station::issue(instruction &ins, ROB &rob) {
         res_record *r_rec = (*_board[type])[i];
         if (r_rec->executed) { // empty res_record
 
-            if (r_rec->committed) // delete ONLY when commited, for it could be in other components
-                delete r_rec;
-
             res_record* tmp = new res_record(ins._info, ins._pc);
             (*_board[type])[i] = tmp; 
             
-            // mark the true data dependencies on its reservation station
-            _find_dep(*tmp, rob);
-
-            // push it into ROB
-            rob.add_entry(*tmp);
+            
+            rob.find_dep(*tmp); // mark the dependencies in record
+            rob.add_ref(tmp); // record reference count, for garbage collection
+            rob.add_entry(*tmp); // put it in rob
             return true;
         }
     }
     
-    // reservation stations is ful
+    // reservation stations is full
     return false;   
-}
-
-bool res_station::_find_dep(res_record &rr, ROB &rob) {
-
-    for (res_record *rob_rr : rob.entries) {
-        if (rr.qj == NULL && rob_rr->fi == rr.fj)
-            rr.qj = rob_rr;
-        if (rr.qk == NULL && rob_rr->fi == rr.fk) 
-            rr.qk = rob_rr;
-    }
-
-    return true;
 }
 
 bool res_station::execute(back_writer &bck_wrter) {
@@ -79,5 +63,6 @@ bool res_station::can_issue(instruction &ins) {
         }
     }
 
+    cout << type << " reservation station is full!" << endl;
     return false;
 }

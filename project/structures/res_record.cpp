@@ -56,8 +56,12 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
 
 float res_record::_decode(string reg, res_record *ref) {
     int reg_num;
-    if (reg[0] == 'p') { // if operand needs to be initialize, return 0
-        reg_num = GET_REG_NUM(reg);
+    if (reg.length()) {
+        if (reg[0] == 'p') { // if operand needs to be initialize, return 0
+            reg_num = GET_REG_NUM(reg);
+        } else {
+            return stof(reg);
+        }
     } else { 
         return .0;
     }
@@ -72,8 +76,13 @@ float res_record::_decode(string reg, res_record *ref) {
 }  
 
 bool res_record::execute() {
-      
-    // dependencies are not resolved or has executed
+    
+    // attempt to resolve the dependencies
+    if ((qj && qj->written_back))
+        fj = to_string(_decode(fj, qj));
+    if ((qk && qk->written_back))
+        fk = to_string(_decode(fk, qk));
+
     if (executed || (qj && !qj->written_back) || (qk && !qk->written_back)) {
         return false;
     }

@@ -22,7 +22,6 @@ class ins_queue {
 class res_station {
     private:
         unordered_map<string, vector<res_record*>*> _board;
-        bool _find_dep(res_record &rr, ROB &rob); // search for dependecies (true data hazards)
         bool _execute_rec(res_record &rr);
     public:
         res_station();
@@ -77,10 +76,14 @@ class CDB {
 class ROB {
     private: 
         int _max_entries;
+        void free_dep(res_record *rr);
     public:
         deque<res_record*> entries;
+        unordered_map<res_record*, int> garbage_collector; // count the references to each dependency
         ROB(int nr);
         bool is_full();
         bool commit(CDB &bus, decoder &d);
-        void add_entry(res_record &rr);
+        void find_dep(res_record &rr); // search for dependecies (true data hazards)
+        void add_entry(res_record &rr); 
+        void add_ref(res_record *rr);
 };
