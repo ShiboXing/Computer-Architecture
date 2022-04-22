@@ -45,6 +45,8 @@ using namespace std;
     {"fsd", "STORE"},\
 })
 
+#define GET_REG_NUM(reg_str) stoi(reg_str.substr(1, reg_str.length()-1));
+
 extern int PC;
 extern int CYCLE;
 extern float REGS[32];

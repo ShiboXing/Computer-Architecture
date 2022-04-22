@@ -80,11 +80,11 @@ void decoder::print_regs() {
     // print out registers
     reg_stream << "register content: " << endl;
     for (auto itm : _reg_lst) {
-        int reg = stoi(itm.second.substr(1, itm.second.length()-1));
+        int reg = GET_REG_NUM(itm.second);
         reg_stream << "p" << reg << "(" << itm.first << "):  " << REGS[reg] << endl;
     }
 }
 
-void free_reg(int reg_num) {
-    _free_lst.push_back(reg_num);
+void decoder::free_reg(string reg) {
+    // _free_lst.push_back(reg_num);
 }

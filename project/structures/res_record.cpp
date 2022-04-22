@@ -57,7 +57,7 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
 float res_record::_decode(string reg, res_record *ref) {
     int reg_num;
     if (reg[0] == 'p') { // if operand needs to be initialize, return 0
-        reg_num = stoi(reg.substr(1, reg.size()-1));
+        reg_num = GET_REG_NUM(reg);
     } else { 
         return .0;
     }

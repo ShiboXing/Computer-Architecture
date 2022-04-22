@@ -24,8 +24,8 @@ bool ROB::commit(CDB &bus, decoder &d) {
         rr->committed = true;
         
         // write value to the register (R-type)
-        if (rr->op != "fsd" && rr->op != "bne") {
-            int reg_num = stoi(rr->fi.substr(1, rr->fi.length()-1));
+        if (rr->_op != "fsd" && rr->_op != "bne") {
+            int reg_num = GET_REG_NUM(rr->fi)
             REGS[reg_num] = rr->_result;
             
             // let decoder free register if necessary

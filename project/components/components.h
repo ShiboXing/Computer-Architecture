@@ -47,7 +47,7 @@ class decoder {
         decoder();
         void print_regs();
         bool rename(instruction &ins);
-        void free_reg(int reg_num);
+        void free_reg(string reg);
 };
 
 class back_writer {

@@ -29,7 +29,7 @@ int main() {
         bool running = false;
 
         // COMMIT 
-        running |= reorder_buffer.commit(bus);
+        running |= reorder_buffer.commit(bus, d);
         
         // WRITE BACK
         running |= bck_wrter.write_back(bus);
