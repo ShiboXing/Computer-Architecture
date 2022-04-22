@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <set>
 #include "../globals.h"
 #include "../structures/structures.h"
 
@@ -42,10 +43,10 @@ class fetcher {
 class decoder {
     private:
         ofstream *decode_stream;
-        vector<int> _free_lst;
+        set<string> _free_lst;
         unordered_map<string, string> areg_2_preg;
         unordered_map<string, string> preg_2_areg;
-        void _output_mapping(vector<string> &info);
+        void _output_mapping(vector<string> &info, vector<string> &aregs);
     public:
         decoder();
         void print_regs();

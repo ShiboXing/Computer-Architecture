@@ -4,10 +4,6 @@
 
 using namespace std;
 
-#define NF 4
-#define NW 4
-#define NR 16
-#define NB 4
 #define REG_SIZE 32
 
 #define INS_LAT unordered_map<string, int>({\
@@ -45,7 +41,13 @@ using namespace std;
     {"fsd", "STORE"},\
 })
 
-#define GET_REG_NUM(reg_str) stoi(reg_str.substr(1, reg_str.length()-1));
+#define GET_REG_NUM(reg_str) stoi(reg_str.substr(1, reg_str.length()-1))
+
+
+extern int NF;
+extern int NW;
+extern int NR;
+extern int NB;
 
 extern int PC;
 extern int CYCLE;

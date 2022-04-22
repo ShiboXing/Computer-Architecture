@@ -11,15 +11,33 @@ float REGS[32] = { 0 };
 unordered_map<string, int> TAG_TB;
 unordered_map<int, int> MEM;
 
-int main() {
+// declare extern tomasulo parameters
+int NF;
+int NW;
+int NR;
+int NB;
 
+int main(int argc, char** argv) {
+
+    if (argc != 6) {
+        cout << "usage : ./main [NF] [NW] [NR] [NB] [path_to_test_file] " << endl;
+        exit(0);
+    }
+    
+    NF = atoi(argv[1]);
+    NW = atoi(argv[2]);
+    NR = atoi(argv[3]);
+    NB = atoi(argv[4]);
+
+    string code_pth = argv[5];
+    
     CDB bus(NB);
     back_writer bck_wrter;
     ROB reorder_buffer(NR);
     res_station rs;
     ins_queue ins_tb;
     decoder d;
-    fetcher f("test_files/ins3.dat");
+    fetcher f(code_pth);
     ofstream MEM_STREAM("mem.out");
 
     bool program_started = false;

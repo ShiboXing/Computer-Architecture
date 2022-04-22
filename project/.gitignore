@@ -1,3 +1,6 @@
+# executable
+./main
+
 # test cases:
 *.dat
 *.out

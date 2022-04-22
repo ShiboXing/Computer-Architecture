@@ -15,6 +15,8 @@ components/back_writer.o
 
 default: $(OBJS)
 	$(CC) -o main $(OBJS)
+run:  		
+	./main 4 4 16 4 test_files/ins2.dat
 clean: 
 	find . -type f -name "*.o" -delete
 	find . -type f -name "*.h.gch" -delete

@@ -25,11 +25,13 @@ bool ROB::commit(CDB &bus, decoder &d) {
         
         // write value to the register (R-type)
         if (rr->_op != "fsd" && rr->_op != "bne") {
-            int reg_num = GET_REG_NUM(rr->fi)
+            int reg_num = GET_REG_NUM(rr->fi);
             REGS[reg_num] = rr->_result;
             
             // let decoder free register if necessary
             d.free_reg(rr->fi);
+            d.free_reg(rr->fj);
+            d.free_reg(rr->fk);
         }
 
         // pop ROB
