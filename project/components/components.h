@@ -25,8 +25,10 @@ class res_station {
         bool _execute_rec(res_record &rr);
     public:
         res_station();
+        bool can_issue(instruction &ins);
         bool issue(instruction &ins, ROB &rob);
         bool execute(back_writer &bck_wrter);
+        
 };
 
 class fetcher {
@@ -49,6 +51,7 @@ class decoder {
         void print_regs();
         bool rename(instruction &ins);
         void free_reg(string reg);
+        bool can_rename();
 };
 
 class back_writer {

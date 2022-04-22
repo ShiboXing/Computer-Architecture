@@ -17,11 +17,10 @@ int main() {
     back_writer bck_wrter;
     ROB reorder_buffer(NR);
     res_station rs;
-    decoder d;
-    fetcher f("test_files/ins2.dat");
     ins_queue ins_tb;
+    decoder d;
+    fetcher f("test_files/ins3.dat");
     ofstream MEM_STREAM("mem.out");
-    instruction *ins;
 
     bool program_started = false;
 
@@ -41,17 +40,13 @@ int main() {
         for (int i=0; i<NW; i++) {
             if (ins_tb.ins_q.size()) {
                 running = true;
-                if (!reorder_buffer.is_full()) {
-                    instruction *ins = ins_tb.ins_q.back();
-                    if (d.rename(*ins)) {
-                        if (rs.issue(*ins, reorder_buffer)) {
-                            ins_tb.ins_q.pop_back();
-                        } else{
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
+                instruction *ins = ins_tb.ins_q.back();
+                if (d.can_rename() && rs.can_issue(*ins) && !reorder_buffer.is_full()) {
+                    d.rename(*ins);
+                    rs.issue(*ins, reorder_buffer);
+                    ins_tb.ins_q.pop_back();
+                } else {
+                    break;
                 }
             }
         }        
@@ -61,7 +56,7 @@ int main() {
             string ins_str;
             if ((ins_str = f.fetch_next()).length()) {
                 running = true;
-                ins = new instruction(PC, ins_str);
+                instruction *ins = new instruction(PC, ins_str);
                 if (ins->is_mem) { // load memory content and skip
                     delete ins;
                     break;

@@ -68,3 +68,16 @@ bool res_station::execute(back_writer &bck_wrter) {
     return has_records;
 }
 
+bool res_station::can_issue(instruction &ins) {
+    string op = ins._info[0];
+    string type = TYPE_MAP[op];
+    
+    for (int i=0; i<_board[type]->size(); i++) {
+        res_record *r_rec = (*_board[type])[i];
+        if (r_rec->executed) { 
+            return true;
+        }
+    }
+
+    return false;
+}
