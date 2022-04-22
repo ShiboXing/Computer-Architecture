@@ -41,7 +41,8 @@ class decoder {
     private:
         ofstream *decode_stream;
         vector<int> _free_lst;
-        unordered_map<string, string> _reg_lst;
+        unordered_map<string, string> areg_2_preg;
+        unordered_map<string, string> preg_2_areg;
         void _output_mapping(vector<string> &info);
     public:
         decoder();

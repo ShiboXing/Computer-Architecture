@@ -44,8 +44,13 @@ int main() {
                 if (!reorder_buffer.is_full()) {
                     instruction *ins = ins_tb.ins_q.back();
                     if (d.rename(*ins)) {
-                        rs.issue(*ins, reorder_buffer);
-                        ins_tb.ins_q.pop_back();
+                        if (rs.issue(*ins, reorder_buffer)) {
+                            ins_tb.ins_q.pop_back();
+                        } else{
+                            break;
+                        }
+                    } else {
+                        break;
                     }
                 }
             }

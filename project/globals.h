@@ -22,7 +22,7 @@ using namespace std;
     {"bne", 1},\
 })
 
-// resvationa stations count: 
+// resvation stations count: 
 #define RES_CNT unordered_map<string, int>({\
     {"INT", 4},\
     {"LOAD", 2},\
