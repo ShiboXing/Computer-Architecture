@@ -16,7 +16,7 @@ void ROB::add_entry(res_record &rr) {
     entries.push_front(&rr);
 }
 
-bool ROB::commit(CDB &bus) {
+bool ROB::commit(CDB &bus, decoder &d) {
     res_record *rr;
     bool has_entries = entries.size() > 0;
     
@@ -24,25 +24,13 @@ bool ROB::commit(CDB &bus) {
         rr->committed = true;
         
         // write value to the register (R-type)
-        if (rr->_op == "add" || 
-            rr->_op == "addi" ||
-            rr->_op == "fadd" ||
-            rr->_op == "fsub" ||
-            rr->_op == "fmul" || 
-            rr->_op == "fdiv") {
+        if (rr->op != "fsd" && rr->op != "bne") {
             int reg_num = stoi(rr->fi.substr(1, rr->fi.length()-1));
             REGS[reg_num] = rr->_result;
+            
+            // let decoder free register if necessary
+            d.free_reg(rr->fi);
         }
-
-        // initialize the physical registers that have old mapping
-        if (rr->initialize_operand1 != "") {
-            int reg_num = stoi(rr->initialize_operand1.substr(1, rr->initialize_operand1.length()));
-            REGS[reg_num] = 0.;
-        } 
-        if (rr->initialize_operand2 != "") {
-            int reg_num = stoi(rr->initialize_operand2.substr(1, rr->initialize_operand2.length()));
-            REGS[reg_num] = 0.;
-        }            
 
         // pop ROB
         entries.pop_back();

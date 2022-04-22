@@ -25,7 +25,7 @@ bool res_station::issue(instruction &ins, ROB &rob) {
             if (r_rec->committed) // delete ONLY when commited, for it could be in other components
                 delete r_rec;
 
-            res_record* tmp = new res_record(ins._info, ins._pc, ins.initialize_operand1, ins.initialize_operand2);
+            res_record* tmp = new res_record(ins._info, ins._pc);
             (*_board[type])[i] = tmp; 
             
             // mark the true data dependencies on its reservation station
@@ -49,11 +49,6 @@ bool res_station::_find_dep(res_record &rr, ROB &rob) {
         if (rr.qk == NULL && rob_rr->fi == rr.fk) 
             rr.qk = rob_rr;
     }
-    
-    if (_deps.find(rr.fj) != _deps.end())
-        rr.qj = _deps[rr.fj];
-    if (_deps.find(rr.fk) != _deps.end())
-        rr.qk = _deps[rr.fk];
 
     return true;
 }

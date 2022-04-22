@@ -3,19 +3,17 @@
 // empty res station record
 res_record::res_record() {
     qj = qk = NULL;
-    fi = fj = fk = _op =  initialize_operand1 = initialize_operand2 = "";
-    _imm = _result = 0;
+    fi = fj = fk = _op = "";
+    _imm = _result = .0;
     executed = written_back = committed = false;
 }
 
-res_record::res_record(vector<string> &info, int pc_ind, string initialize_operand1, string initialize_operand2) : res_record() {
+res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
 
     _pc = pc_ind;
     _op = info[0];
     qj = qk = NULL;
     written_back = committed = false;
-    this->initialize_operand1 = initialize_operand1;
-    this->initialize_operand2 = initialize_operand2;
 
     // fill in Fi 
     if (_op != "bne" && _op != "fsd") { 
@@ -58,16 +56,19 @@ res_record::res_record(vector<string> &info, int pc_ind, string initialize_opera
 
 float res_record::_decode(string reg, res_record *ref) {
     int reg_num;
-    if (reg[0] == 'p' && reg != initialize_operand1 && reg != initialize_operand2) // decode if it is a physical register 
+    if (reg[0] == 'p') { // if operand needs to be initialize, return 0
         reg_num = stoi(reg.substr(1, reg.size()-1));
-    else 
+    } else { 
         return .0;
+    }
     
     // check if dependecy register is already committed
-    if (ref == NULL || !ref->committed)
+    if (ref == NULL || ref->committed) {
         return REGS[reg_num];
-    else
+    } else {
+        assert (ref->written_back); // confirm dependency can be forwarded
         return ref->_result;
+    }
 }  
 
 bool res_record::execute() {
@@ -78,21 +79,21 @@ bool res_record::execute() {
     }
 
     if (cycles_left == 0) {
-        float fj_num = _decode(fj, qj);
-        float fk_num = _decode(fk, qk);
+        float fj_res = _decode(fj, qj);
+        float fk_res = _decode(fk, qk);
 
         if (_op == "add" || _op == "fadd") {
-            _result = fj_num + fk_num;
+            _result = fj_res + fk_res;
         } else if (_op == "addi" ) {
-            _result = fj_num + _imm;
+            _result = fj_res + _imm;
         } else if (_op == "fsub") {
-            _result = fj_num - fk_num;
+            _result = fj_res - fk_res;
         } else if (_op == "fmul") {
-            _result = fj_num * fk_num;
+            _result = fj_res * fk_res;
         } else if (_op == "fdiv") {
-            _result = fj_num / fk_num;
+            _result = fj_res / fk_res;
         } else if (_op == "fld") {
-            _result = MEM[fj_num + _imm];
+            _result = MEM[fj_res + _imm];
         }
     
         return executed = true;

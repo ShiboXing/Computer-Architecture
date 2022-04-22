@@ -19,7 +19,7 @@ void decoder::_output_mapping(vector<string> &info) {
     *decode_stream << endl;
 }
 
-void decoder::rename(instruction &ins) {
+bool decoder::rename(instruction &ins) {
     // get the last register
     auto last_ins = &(ins._info);
     string op = (*last_ins)[0];
@@ -44,7 +44,7 @@ void decoder::rename(instruction &ins) {
                     // push back unused free registers
                     _free_lst.insert(_free_lst.end(), cached_free_regs.begin(), cached_free_regs.end());
                     sort(_free_lst.begin(), _free_lst.end(), greater<int>()); 
-                    return;
+                    return false;
                 }
 
                 n_regs[i] =  "p" + to_string(_free_lst.back()); // collect all unnamed regs
@@ -64,27 +64,14 @@ void decoder::rename(instruction &ins) {
         if (n_regs[i] != "") {
             string *old_reg = &_reg_lst[string((*last_ins)[i])];
             
-            /**
-             * TODO: for new register's mapping, mark it for zero initialization
-             */
-            // free the old register when it is replaced by a new mapping (only happens to current dest)
-            if (*old_reg != "" && *old_reg != n_regs[i]) { 
-                int old_reg_num = stoi(old_reg->substr(1, old_reg->length()-1));
-                _free_lst.push_back(old_reg_num);
-            } else if (*old_reg == "" && i != 1) {
-                if (ins.initialize_operand1 == "") {
-                    ins.initialize_operand1 = n_regs[i];
-                } else {
-                    ins.initialize_operand2 = n_regs[i];
-                }
-            }
-
             *old_reg = n_regs[i];
             (*last_ins)[i] = n_regs[i];
         }
     }
     sort(_free_lst.begin(), _free_lst.end(), greater<int>()); 
     _output_mapping(*last_ins);
+    
+    return true;
 }
 
 void decoder::print_regs() {
@@ -96,5 +83,8 @@ void decoder::print_regs() {
         int reg = stoi(itm.second.substr(1, itm.second.length()-1));
         reg_stream << "p" << reg << "(" << itm.first << "):  " << REGS[reg] << endl;
     }
+}
 
+void free_reg(int reg_num) {
+    _free_lst.push_back(reg_num);
 }

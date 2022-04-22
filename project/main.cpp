@@ -21,6 +21,7 @@ int main() {
     fetcher f("test_files/ins2.dat");
     ins_queue ins_tb;
     ofstream MEM_STREAM("mem.out");
+    instruction *ins;
 
     bool program_started = false;
 
@@ -41,15 +42,16 @@ int main() {
             if (ins_tb.ins_q.size()) {
                 running = true;
                 if (!reorder_buffer.is_full()) {
-                    instruction *ins = ins_tb.pop_unissued();
-                    d.rename(*ins);
-                    rs.issue(*ins, reorder_buffer);
+                    instruction *ins = ins_tb.ins_q.back();
+                    if (d.rename(*ins)) {
+                        rs.issue(*ins, reorder_buffer);
+                        ins_tb.ins_q.pop_back();
+                    }
                 }
             }
         }        
         
         // FETCH
-        instruction *ins;
         for (int i=0; i<NF; i++) {
             string ins_str;
             if ((ins_str = f.fetch_next()).length()) {

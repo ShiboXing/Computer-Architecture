@@ -21,7 +21,6 @@ class ins_queue {
 class res_station {
     private:
         unordered_map<string, vector<res_record*>*> _board;
-        unordered_map<string, res_record*> _deps; // dependencies
         bool _find_dep(res_record &rr, ROB &rob); // search for dependecies (true data hazards)
         bool _execute_rec(res_record &rr);
     public:
@@ -47,7 +46,8 @@ class decoder {
     public:
         decoder();
         void print_regs();
-        void rename(instruction &ins);
+        bool rename(instruction &ins);
+        void free_reg(int reg_num);
 };
 
 class back_writer {
@@ -76,6 +76,6 @@ class ROB {
         deque<res_record*> entries;
         ROB(int nr);
         bool is_full();
-        bool commit(CDB &bus);
+        bool commit(CDB &bus, decoder &d);
         void add_entry(res_record &rr);
 };
