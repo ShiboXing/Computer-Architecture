@@ -45,13 +45,17 @@ class decoder {
         set<string> _free_lst;
         unordered_map<string, string> areg_2_preg;
         unordered_map<string, string> preg_2_areg;
+        unordered_map<string, bool> commit_status;
         void _output_mapping(vector<string> &info, vector<string> &aregs);
     public:
         decoder();
         void print_regs();
+        void free_regs();
+        void update_commit(string reg, bool committed);
         bool rename(instruction &ins);
-        void free_reg(string reg);
         bool can_rename();
+
+
 };
 
 class back_writer {

@@ -72,12 +72,6 @@ float res_record::_decode(string reg, res_record *ref) {
 }  
 
 bool res_record::execute() {
-    
-    // attempt to resolve the dependencies
-    if ((qj && qj->written_back))
-        fj = to_string(_decode(fj, qj));
-    if ((qk && qk->written_back))
-        fk = to_string(_decode(fk, qk));
 
     if (executed || (qj && !qj->written_back) || (qk && !qk->written_back)) // check if operands are resolved
         return false;
@@ -119,7 +113,6 @@ bool res_record::execute() {
 int res_record::get_mem_addr() {
     assert (_op == "fld" || _op == "fsd");
     assert (!qk || qk->written_back);
-    if (fk[0] == 'p')
-        fk = to_string(_decode(fk, qk));
-    return int(stof(fk)) + _imm;
+
+    return int(_decode(fk, qk)) + _imm;
 }

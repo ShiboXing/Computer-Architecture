@@ -35,13 +35,10 @@ bool ROB::commit(CDB &bus, decoder &d) {
             } else {
                 int reg_num = GET_REG_NUM(rr->fi);
                 REGS[reg_num] = rr->_result;
+
+                d.update_commit(rr->fi, true); // let decoder know dest reg is committed
             }
         } 
-
-        // let decoder free register if necessary
-        d.free_reg(rr->fi);
-        d.free_reg(rr->fj);
-        d.free_reg(rr->fk);
 
         free_dep(rr->qj);
         free_dep(rr->qk);

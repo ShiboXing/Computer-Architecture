@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
         running |= rs.execute(bck_wrter, reorder_buffer);
 
         // DECODE, ISSUE
+        d.free_regs();
         for (int i=0; i<NW; i++) {
             if (ins_tb.ins_q.size()) {
                 running = true;
@@ -104,7 +105,7 @@ int main(int argc, char** argv) {
         }        
     }
 
-    // print out
+    // print out regs
     d.print_regs();
     
     // print out memory

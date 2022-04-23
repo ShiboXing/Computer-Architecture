@@ -27,7 +27,6 @@ bool decoder::rename(instruction &ins) {
 
     // need a free reg for dest
     string new_preg = *_free_lst.begin();
-    _free_lst.erase(new_preg);
 
     vector<string> *last_ins = &ins._info;
     vector<string> aregs(*last_ins);
@@ -54,11 +53,18 @@ bool decoder::rename(instruction &ins) {
         areg_2_preg[dest_areg] = new_preg;
         preg_2_areg[new_preg] = dest_areg;
         (*last_ins)[1] = new_preg;
+        
+        _free_lst.erase(new_preg); // remove the new reg from free list
+        update_commit(new_preg, false);
     }
 
     _output_mapping(*last_ins, aregs);
 
     return true;
+}
+
+void decoder::update_commit(string reg, bool committed) {
+    commit_status[reg] = committed;
 }
 
 void decoder::print_regs() {
@@ -71,14 +77,13 @@ void decoder::print_regs() {
     }
 }
 
-void decoder::free_reg(string reg) {
-    if (reg[0] != 'p') // not a reg
-        return;
-
-    string areg = preg_2_areg[reg];
-    if (areg_2_preg[areg] != reg) {
-        _free_lst.insert(reg);
-    }   
+void decoder::free_regs() {
+    for (auto itm : preg_2_areg) {
+        if (commit_status[itm.first] && itm.first != areg_2_preg[itm.second]) {
+            preg_2_areg.erase(itm.first);
+            _free_lst.insert(itm.first);
+        }
+    }
 }
 
 bool decoder::can_rename() {
