@@ -27,7 +27,7 @@ class res_station {
         res_station();
         bool can_issue(instruction &ins);
         bool issue(instruction &ins, ROB &rob);
-        bool execute(back_writer &bck_wrter);
+        bool execute(back_writer &bck_wrter, ROB &rob);
         
 };
 
@@ -84,6 +84,7 @@ class ROB {
         bool is_full();
         bool commit(CDB &bus, decoder &d);
         void find_dep(res_record &rr); // search for dependecies (true data hazards)
+        void find_mem_dep(res_record &rr);
         void add_entry(res_record &rr); 
         void add_ref(res_record *rr);
 };

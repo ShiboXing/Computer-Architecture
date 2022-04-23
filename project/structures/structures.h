@@ -26,6 +26,7 @@ class res_record {
         string fk;
         res_record *qj;
         res_record *qk;
+        res_record *qmem;
         string _op;
         float _imm;
         float _result;
@@ -36,8 +37,10 @@ class res_record {
         bool written_back;
         bool committed;
 
+        int get_mem_addr();
+        bool execute();
+
         res_record(vector<string> &info, int pc_ind);
         res_record();
 
-        bool execute();
 };

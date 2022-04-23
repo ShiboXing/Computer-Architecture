@@ -1,8 +1,8 @@
 # vscode settings
-./vscode/
+.vscode
 
 # executable
-./main
+main
 
 # test cases:
 *.dat

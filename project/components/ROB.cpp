@@ -29,16 +29,20 @@ bool ROB::commit(CDB &bus, decoder &d) {
         rr->committed = true;
         
         // write value to the register (R-type)
-        if (rr->_op != "fsd" && rr->_op != "bne") {
-            int reg_num = GET_REG_NUM(rr->fi);
-            REGS[reg_num] = rr->_result;
-            
-            // let decoder free register if necessary
-            d.free_reg(rr->fi);
-            d.free_reg(rr->fj);
-            d.free_reg(rr->fk);
-        }
-        
+        if (rr->_op != "bne") {
+            if (rr->_op == "fsd") {
+                MEM[rr->get_mem_addr()] = rr->_result;
+            } else {
+                int reg_num = GET_REG_NUM(rr->fi);
+                REGS[reg_num] = rr->_result;
+            }
+        } 
+
+        // let decoder free register if necessary
+        d.free_reg(rr->fi);
+        d.free_reg(rr->fj);
+        d.free_reg(rr->fk);
+
         free_dep(rr->qj);
         free_dep(rr->qk);
 
@@ -83,3 +87,26 @@ void ROB::add_ref(res_record *rr) {
     }
 }
 
+void ROB::find_mem_dep(res_record &rr) {
+    if (rr._op != "fld" || (rr.qk && !rr.qk->written_back) || rr.qmem != NULL)  // not load || operands are not ready || mem dependency found or no dependency
+        return;
+
+    bool started = false;
+    bool has_dep = false;
+    for (res_record *rob_rr : entries) {
+        if (!started) {
+            if (rob_rr == &rr) {
+                started = true;
+            }
+        } else if (rob_rr->_op == "fsd") {
+            if (rob_rr->fk[0] != 'p' && rr.get_mem_addr() == rob_rr->get_mem_addr()) {
+                rr.qmem = rob_rr;
+            } else {
+                has_dep = true;
+            }
+        }
+    }
+
+    if (!has_dep) 
+        rr.qmem = &rr;
+}

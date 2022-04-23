@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
         running |= bck_wrter.write_back(bus);
 
         // EXECUTE 
-        running |= rs.execute(bck_wrter);
+        running |= rs.execute(bck_wrter, reorder_buffer);
 
         // DECODE, ISSUE
         for (int i=0; i<NW; i++) {

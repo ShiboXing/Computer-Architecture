@@ -36,13 +36,15 @@ bool decoder::rename(instruction &ins) {
 
     // name operands if mapping exists
     for (int i=first_operand; i<4; i++) {
-        string dest_areg = (*last_ins)[i];
-        if (dest_areg[0] == 'R' || dest_areg[0] == 'F') {
-            if (areg_2_preg.find(dest_areg) == areg_2_preg.end()) { // no previous mapping, operand has no value
+        string op_areg = (*last_ins)[i];
+        if (op_areg[0] == 'R' || op_areg[0] == 'F') {
+            if (areg_2_preg.find(op_areg) == areg_2_preg.end()) { // no previous mapping, operand has no value
                 (*last_ins)[i] = "0";
             } else { // use previous mapping, operand has value
-                (*last_ins)[i] = areg_2_preg[dest_areg];
+                (*last_ins)[i] = areg_2_preg[op_areg];
             }
+        } else if (op_areg[0] == '$') {
+            (*last_ins)[i] = GET_REG_NUM(op_areg);
         }
     }
     

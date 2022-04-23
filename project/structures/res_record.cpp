@@ -2,7 +2,7 @@
 
 // empty res station record
 res_record::res_record() {
-    qj = qk = NULL;
+    qj = qk = qmem = NULL;
     fi = fj = fk = _op = "";
     _imm = _result = .0;
     executed = written_back = committed = false;
@@ -23,18 +23,14 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     // fill in Fj
     if (_op == "bne" || _op == "fsd") {
         fj = info[1];
-    } else if (_op == "fld") {
-        fj = info[3];
-    } else {
+    } else if (_op != "fld") {
         fj = info[2];
     }
 
     // fill in Fk (check for register in bne operands)
-    if (_op == "bne") {
-        if (info[2][0] == 'p') {
-            fk = info[2];
-        }
-    } else if (_op != "fld" && _op != "fsd" && info[3][0] == 'p') {
+    if (_op == "bne" && info[2][0] == 'p') {
+        fk = info[2];
+    } else if (info[3][0] == 'p') {
         fk = info[3];
     }
     
@@ -83,9 +79,10 @@ bool res_record::execute() {
     if ((qk && qk->written_back))
         fk = to_string(_decode(fk, qk));
 
-    if (executed || (qj && !qj->written_back) || (qk && !qk->written_back)) {
+    if (executed || (qj && !qj->written_back) || (qk && !qk->written_back)) // check if operands are resolved
         return false;
-    }
+    if (_op == "fld" && (!qmem || (qmem != this && qmem->written_back))) // check fld for its mem dependency
+        return false;
 
     if (cycles_left == 0) {
         float fj_res = _decode(fj, qj);
@@ -102,13 +99,27 @@ bool res_record::execute() {
         } else if (_op == "fdiv") {
             _result = fj_res / fk_res;
         } else if (_op == "fld") {
-            _result = MEM[fj_res + _imm];
+            if (qmem == this) { // no mem dependecy
+                _result = MEM[get_mem_addr()];
+            } else {
+                _result = qmem->_result;
+            }
+        } else if (_op == "fsd") {  
+            _result = fj_res;
         }
-    
+
         return executed = true;
     } else {
         cycles_left--;
     }
     
     return false;
+}
+
+int res_record::get_mem_addr() {
+    assert (_op == "fld" || _op == "fsd");
+    assert (!qk || qk->written_back);
+    if (fk[0] == 'p')
+        fk = to_string(_decode(fk, qk));
+    return int(stof(fk)) + _imm;
 }

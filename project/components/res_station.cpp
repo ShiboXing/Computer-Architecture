@@ -37,13 +37,14 @@ bool res_station::issue(instruction &ins, ROB &rob) {
     return false;   
 }
 
-bool res_station::execute(back_writer &bck_wrter) {
+bool res_station::execute(back_writer &bck_wrter, ROB &rob) {
     bool has_records = false;
 
     for (auto item : _board) {
         auto station = item.second;
         for (res_record *rr : *station) {
             has_records |= !rr->executed;
+            rob.find_mem_dep(*rr);
             if (rr->execute())
                 bck_wrter.add_entry(*rr);
         }
