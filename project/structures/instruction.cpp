@@ -27,10 +27,8 @@ void instruction::_fill_info(vector<string> &ins) {
     } else { // RISC V ISA
         int i = 0;
         string tmp;
-        if (ins[i].back() == ':') { // tag (loop: addi R0, R1, 1)
-            TAG_TB[ins[i].substr(0, ins[i].length()-1)] = _pc;
+        if (ins[i].back() == ':') // if line is a tag
             i++;
-        } 
 
         _info.push_back(ins[i]);
         _info.push_back(ins[i+1]);

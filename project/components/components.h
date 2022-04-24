@@ -1,9 +1,5 @@
-#include <string>
-#include <fstream>
-#include <iostream>
 #include <vector>
 #include <set>
-#include "../globals.h"
 #include "../structures/structures.h"
 
 using namespace std;
@@ -28,15 +24,6 @@ class res_station {
         bool can_issue(instruction &ins);
         bool issue(instruction &ins, ROB &rob);
         bool execute(back_writer &bck_wrter, ROB &rob);
-        
-};
-
-class fetcher {
-    private:
-        ifstream *ins_stream;
-    public:
-        fetcher(string fname); 
-        string fetch_next();
 };
 
 class decoder {
@@ -54,8 +41,6 @@ class decoder {
         void update_commit(string reg, bool committed);
         bool rename(instruction &ins);
         bool can_rename();
-
-
 };
 
 class back_writer {
@@ -91,4 +76,15 @@ class ROB {
         void find_mem_dep(res_record &rr);
         void add_entry(res_record &rr); 
         void add_ref(res_record *rr);
+};
+
+class BTB {
+    private: 
+        const int max_size = 16;
+        unordered_map<int, int> targets;
+        unordered_map<int, bool> predicts; // 1 bit predictor, bool type
+        unordered_map<int, int> lru_stamps; // map pc to cycle count, for eviction
+
+    public:
+        void write_entry(int pc, int target, bool outcome, int cycle);
 };

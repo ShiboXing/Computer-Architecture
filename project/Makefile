@@ -1,16 +1,17 @@
 
 CC=g++
-CFLAGS=-std=c++11 -c -Wall -pedantic -g
+CFLAGS=-std=c++14 -c -Wall -pedantic -g
 OBJS= \
 main.o \
+fetch.o \
 structures/instruction.o \
 structures/res_record.o \
-components/fetch.o \
 components/decoder.o \
 components/ins_table.o \
 components/res_station.o \
 components/CDB.o \
-components/ROB.o\
+components/ROB.o \
+components/BTB.o \
 components/back_writer.o
 
 default: $(OBJS)

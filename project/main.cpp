@@ -10,6 +10,8 @@ int CYCLE = 0;
 float REGS[32] = { 0 };
 unordered_map<string, int> TAG_TB;
 unordered_map<int, int> MEM;
+unordered_map<string, int> TAGS;
+fetcher IF;
 
 // declare extern tomasulo parameters
 int NF;
@@ -23,36 +25,38 @@ int main(int argc, char** argv) {
         cout << "usage : ./main [NF] [NW] [NR] [NB] [path_to_test_file] " << endl;
         exit(0);
     }
-    
+
     NF = atoi(argv[1]);
     NW = atoi(argv[2]);
     NR = atoi(argv[3]);
     NB = atoi(argv[4]);
 
-    string code_pth = argv[5];
-    
     CDB bus(NB);
     back_writer bck_wrter;
-    ROB reorder_buffer(NR);
+    ROB rob(NR);
     res_station rs;
     ins_queue ins_tb;
     decoder d;
-    fetcher f(code_pth);
     ofstream MEM_STREAM("mem.out");
-
+    
+    string codepth = argv[5];
+    IF.add_codepth(codepth); // open code file
+    IF.scan_tags(); // store all branch tags 
+    IF.add_codepth(codepth); // open code file
+    
     bool program_started = false;
-
+    
     while (true) {
         bool running = false;
 
         // COMMIT 
-        running |= reorder_buffer.commit(bus, d);
+        running |= rob.commit(bus, d);
         
         // WRITE BACK
         running |= bck_wrter.write_back(bus);
 
         // EXECUTE 
-        running |= rs.execute(bck_wrter, reorder_buffer);
+        running |= rs.execute(bck_wrter, rob);
 
         // DECODE, ISSUE
         d.free_regs();
@@ -60,9 +64,9 @@ int main(int argc, char** argv) {
             if (ins_tb.ins_q.size()) {
                 running = true;
                 instruction *ins = ins_tb.ins_q.back();
-                if (d.can_rename() && rs.can_issue(*ins) && !reorder_buffer.is_full()) {
+                if (d.can_rename() && rs.can_issue(*ins) && !rob.is_full()) {
                     d.rename(*ins);
-                    rs.issue(*ins, reorder_buffer);
+                    rs.issue(*ins, rob);
                     ins_tb.ins_q.pop_back();
                 } else {
                     break;
@@ -73,9 +77,9 @@ int main(int argc, char** argv) {
         // FETCH
         for (int i=0; i<NF; i++) {
             string ins_str;
-            if ((ins_str = f.fetch_next()).length()) {
+            if ((ins_str = IF.fetch_next()).length()) {
                 running = true;
-                instruction *ins = new instruction(PC, ins_str);
+                instruction *ins = new instruction(PC++, ins_str);
                 if (ins->is_mem) { // load memory content and skip
                     delete ins;
                     break;

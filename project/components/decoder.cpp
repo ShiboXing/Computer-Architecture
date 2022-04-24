@@ -43,7 +43,7 @@ bool decoder::rename(instruction &ins) {
                 (*last_ins)[i] = areg_2_preg[op_areg];
             }
         } else if (op_areg[0] == '$') {
-            (*last_ins)[i] = GET_REG_NUM(op_areg);
+            (*last_ins)[i] = to_string(GET_REG_NUM(op_areg));
         }
     }
     

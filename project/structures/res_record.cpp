@@ -28,22 +28,20 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     }
 
     // fill in Fk (check for register in bne operands)
-    if (_op == "bne" && info[2][0] == 'p') {
+    if (_op == "bne") {
         fk = info[2];
-    } else if (info[3][0] == 'p') {
+    } else {
         fk = info[3];
     }
     
     // fill in immediate value
-    if (_op == "addi") {
-        _imm = stof(info[3]);                   // guard for reg in bne
-    } else if ( _op == "fsd" || _op == "fld" || (_op == "bne" && info[2][0] != 'p')) { 
+    if ( _op == "fsd" || _op == "fld") { 
         _imm = stof(info[2]);
     }   
 
     // fill in tag
     if (_op == "bne") {
-        tag = TAG_TB[info[3]];
+        tag = TAGS[info[3]];
     }
 
     // fill in latency
@@ -82,10 +80,8 @@ bool res_record::execute() {
         float fj_res = _decode(fj, qj);
         float fk_res = _decode(fk, qk);
 
-        if (_op == "add" || _op == "fadd") {
+        if (_op == "add" || _op == "fadd" || _op == "addi") {
             _result = fj_res + fk_res;
-        } else if (_op == "addi" ) {
-            _result = fj_res + _imm;
         } else if (_op == "fsub") {
             _result = fj_res - fk_res;
         } else if (_op == "fmul") {
@@ -100,6 +96,8 @@ bool res_record::execute() {
             }
         } else if (_op == "fsd") {  
             _result = fj_res;
+        } else if (_op == "bne") {
+            // IF.set_pc(tag);
         }
 
         return executed = true;
