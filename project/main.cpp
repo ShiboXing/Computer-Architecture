@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
 
         // EXECUTE 
         running |= rs.execute(bck_wrter, rob);
+        rob.branch_flush(d, ins_tb); // flush rob for potential miss prediction
 
         // DECODE, ISSUE
         d.free_regs();

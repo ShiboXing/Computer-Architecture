@@ -35,7 +35,7 @@ void fetcher::scan_tags() {
 void fetcher::set_pc(int pc) {
     ins_stream->seekg(0); // reset to the beginning
     string line;
-    for (int i=0; i<pc && !ins_stream->eof(); i++)
+    for (int i=0; i<pc; i++)
         getline(*ins_stream, line); 
 
     PC = pc;

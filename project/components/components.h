@@ -12,7 +12,7 @@ class ins_queue {
     public:
         deque<instruction*> ins_q;
         void add_ins(instruction &ins);
-        instruction *pop_unissued();
+        void branch_flush();
 };
 
 class res_station {
@@ -37,9 +37,8 @@ class decoder {
         unordered_map< int, set<string> > f_snapshots; // important to store the static-allocated objects
         unordered_map< int, unordered_map<string, string> > a_snapshots;
         unordered_map< int, unordered_map<string, string> > p_snapshots;
-        unordered_map< int, unordered_map<string, bool> > c_snapshots;
 
-        void _output_mapping(vector<string> &info, vector<string> &aregs);
+        void _output_mapping(vector<string> &info, vector<string> &aregs, bool is_branch, int pc);
     public:
         decoder();
         void print_regs();
@@ -83,7 +82,7 @@ class ROB {
         void find_mem_dep(res_record &rr);
         void add_entry(res_record &rr); 
         void add_ref(res_record *rr);
-        void branch_flush(res_record &rr, decoder &d);
+        void branch_flush(decoder &d, ins_queue &q);
 };
 
 class BTB {
@@ -94,5 +93,6 @@ class BTB {
         unordered_map<int, int> lru_stamps; // map pc to cycle count, for eviction
 
     public:
-        void write_entry(int pc, int target, bool outcome, int cycle);
+        void write_entry(int pc, int target);
+        int predict(int pc);
 };

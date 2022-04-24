@@ -36,7 +36,7 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     
     // fill in immediate value
     if ( _op == "fsd" || _op == "fld") { 
-        _imm = stof(info[2]);
+        _imm = stoi(info[2]);
     }   
 
     // fill in tag
@@ -100,9 +100,8 @@ bool res_record::execute() {
             if (fj_res == fk_res) {
                 tag = _pc+1;
             }
-            IF.set_pc(tag);
         }
-
+        
         return executed = true;
     } else {
         cycles_left--;

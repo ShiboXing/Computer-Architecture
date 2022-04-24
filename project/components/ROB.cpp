@@ -40,8 +40,8 @@ bool ROB::commit(CDB &bus, decoder &d) {
             }
         } 
 
-        free_dep(rr->qj);
-        free_dep(rr->qk);
+        // free_dep(rr->qj);
+        // free_dep(rr->qk);
 
         // pop ROB
         entries.pop_back();
@@ -59,8 +59,8 @@ void ROB::find_dep(res_record &rr) {
             rr.qk = rob_rr;
     }
 
-    add_ref(rr.qj);
-    add_ref(rr.qk);
+    // add_ref(rr.qj);
+    // add_ref(rr.qk);
 }
 
 void ROB::free_dep(res_record *rr) {
@@ -108,28 +108,38 @@ void ROB::find_mem_dep(res_record &rr) {
         rr.qmem = &rr;
 }
 
-void ROB::branch_flush(res_record &rr, decoder &d) {
-    assert (rr._op == "bne");
-
-    if (entries.front() == &rr) // no preceding fetches
-        return;
-    auto it=entries.rbegin();
-    for (; it!=entries.rend(); it++) 
-        if (*it == &rr)
-            break;
-
-    if ((*(it+1))->_pc != rr.tag) { // prediction failed, flush!
-
-        // flush rob, res_station
-        while (entries.front() != *it) { 
-            entries.front()->executed = true; // free them in res_station
-            entries.pop_front();    
-        }
-
-        // flush decoder mapping
-        d.flush_mappings(rr._pc);
-        
-    }
-
+void ROB::branch_flush(decoder &d, ins_queue &q) {
     
+    int i = entries.size()-1;
+    res_record *rr = NULL;
+    for (; i>=0; i--) {
+        // locate the mis-predicted branch from back to front 
+        /**
+         * @brief conditions of miss prediction:
+         *  1. the pc of the ins following branch ins doesn't match its tag in ROB
+         *  2. the pc of the back ins of the ins_q doesn't match the branch ins at the front of ROB
+         */
+        if (entries[i]->_op == "bne" && entries[i]->executed && ( \
+                (i-1>=0 && entries[i]->tag != entries[i-1]->_pc) || \
+                (i==0 && q.ins_q.size() && entries[i]->tag != q.ins_q.back()->_pc))
+            ) {
+
+            rr = entries[i];
+            // flush ROB
+            while (entries.front() != rr) {
+                entries.front()->executed = entries.front()->committed = entries.front()->committed = true; // free them in res_station too
+                d.update_commit(rr->fi, true); // let decoder know dest reg is committed
+                entries.pop_front();
+            }
+                    
+            // flush & restore decoder mappings
+            d.flush_mappings(rr->_pc);
+
+            // flush incorrectly fetched insturctions
+            q.branch_flush();
+
+            IF.set_pc(rr->tag); // finally set the PC to correctly position
+            return;
+        }
+    }
 }

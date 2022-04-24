@@ -1,20 +1,15 @@
 #include "components.h"
 
-void BTB::write_entry(int pc, int target, bool outcome, int cycle) {
-    assert (targets.size() == predicts.size() && \
-        targets.size() == lru_stamps.size() && \
-        predicts.size() == lru_stamps.size());
+void BTB::write_entry(int pc, int target) {
+    assert (targets.size() == predicts.size());
     
-    
-    if (targets.size() == max_size) {
-        auto it = min_element(lru_stamps.begin(), lru_stamps.end(), \
-            [](const auto& l, const auto& r) { return l.second < r.second; });
-        targets.erase(it->first);
-        predicts.erase(it->first);
-        lru_stamps.erase(it->first);
-        
-    }
     targets[pc] = target;
-    predicts[pc] = outcome;
-    lru_stamps[pc] = cycle;
-}  
+    predicts[pc] = true;
+}
+
+int BTB::predict(int pc) {
+    if (targets.find(pc) == targets.end())
+        return pc+1;
+        
+    return targets[pc];
+}

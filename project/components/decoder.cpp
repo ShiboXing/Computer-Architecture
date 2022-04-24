@@ -8,7 +8,7 @@ decoder::decoder() {
     decode_stream = new ofstream("decode.out");
 }
 
-void decoder::_output_mapping(vector<string> &info, vector<string> &aregs) {
+void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool is_branch, int pc) {
     for (string i : aregs) {
         *decode_stream << i << " ";
     }
@@ -21,6 +21,8 @@ void decoder::_output_mapping(vector<string> &info, vector<string> &aregs) {
         *decode_stream << *it << " ";
     }
     *decode_stream << endl;
+    if (is_branch) 
+        *decode_stream << "========== BRANCH [PC: " << pc << "]========== " << endl;
 }
 
 bool decoder::rename(instruction &ins) {
@@ -58,13 +60,12 @@ bool decoder::rename(instruction &ins) {
         update_commit(new_preg, false);
     }
 
-    _output_mapping(*last_ins, aregs);
+    _output_mapping(*last_ins, aregs, op == "bne", ins._pc);
 
     if (op == "bne") {
         f_snapshots[ins._pc] = _free_lst;
         a_snapshots[ins._pc] = areg_2_preg;
         p_snapshots[ins._pc] = preg_2_areg;
-        c_snapshots[ins._pc] = commit_status;
     }
 
     return true;
@@ -72,18 +73,21 @@ bool decoder::rename(instruction &ins) {
 
 void decoder::flush_mappings(int pc) {
 
-    _free_lst = f_snapshots[pc]; 
+    _free_lst = f_snapshots[pc];
     areg_2_preg = a_snapshots[pc];
     preg_2_areg = p_snapshots[pc];
-    commit_status = c_snapshots[pc];
 
     f_snapshots.clear();
     a_snapshots.clear();
     p_snapshots.clear();
-    c_snapshots.clear();
+
+    *decode_stream << "========== FLUSH [PC: " << pc << "]===========" << endl;
 }
 
 void decoder::update_commit(string reg, bool committed) {
+    if (!reg.length())
+        return;
+    assert (reg[0] == 'p');
     commit_status[reg] = committed;
 }
 
