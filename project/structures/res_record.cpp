@@ -97,7 +97,10 @@ bool res_record::execute() {
         } else if (_op == "fsd") {  
             _result = fj_res;
         } else if (_op == "bne") {
-            // IF.set_pc(tag);
+            if (fj_res == fk_res) {
+                tag = _pc+1;
+            }
+            IF.set_pc(tag);
         }
 
         return executed = true;

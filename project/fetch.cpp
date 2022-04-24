@@ -9,9 +9,8 @@ void fetcher::add_codepth(string fname) {
 string fetcher::fetch_next() {
     string line;
     
-    if (ins_stream->is_open()) {
+    if (!ins_stream->eof()) {
         if (!getline(*ins_stream, line)) {
-            ins_stream->close();
             cout << "fetch stream is closed at PC " << PC << endl;
         }
     }
@@ -36,7 +35,7 @@ void fetcher::scan_tags() {
 void fetcher::set_pc(int pc) {
     ins_stream->seekg(0); // reset to the beginning
     string line;
-    for (int i=0; i<pc; i++)
+    for (int i=0; i<pc && !ins_stream->eof(); i++)
         getline(*ins_stream, line); 
 
     PC = pc;

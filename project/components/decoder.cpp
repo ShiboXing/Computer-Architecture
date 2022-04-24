@@ -60,7 +60,27 @@ bool decoder::rename(instruction &ins) {
 
     _output_mapping(*last_ins, aregs);
 
+    if (op == "bne") {
+        f_snapshots[ins._pc] = _free_lst;
+        a_snapshots[ins._pc] = areg_2_preg;
+        p_snapshots[ins._pc] = preg_2_areg;
+        c_snapshots[ins._pc] = commit_status;
+    }
+
     return true;
+}
+
+void decoder::flush_mappings(int pc) {
+
+    _free_lst = f_snapshots[pc]; 
+    areg_2_preg = a_snapshots[pc];
+    preg_2_areg = p_snapshots[pc];
+    commit_status = c_snapshots[pc];
+
+    f_snapshots.clear();
+    a_snapshots.clear();
+    p_snapshots.clear();
+    c_snapshots.clear();
 }
 
 void decoder::update_commit(string reg, bool committed) {

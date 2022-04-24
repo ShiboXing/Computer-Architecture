@@ -33,12 +33,19 @@ class decoder {
         unordered_map<string, string> areg_2_preg;
         unordered_map<string, string> preg_2_areg;
         unordered_map<string, bool> commit_status;
+
+        unordered_map< int, set<string> > f_snapshots; // important to store the static-allocated objects
+        unordered_map< int, unordered_map<string, string> > a_snapshots;
+        unordered_map< int, unordered_map<string, string> > p_snapshots;
+        unordered_map< int, unordered_map<string, bool> > c_snapshots;
+
         void _output_mapping(vector<string> &info, vector<string> &aregs);
     public:
         decoder();
         void print_regs();
         void free_regs();
         void update_commit(string reg, bool committed);
+        void flush_mappings(int pc); // store info as snapshots, used by branch prediction flushing
         bool rename(instruction &ins);
         bool can_rename();
 };
@@ -76,6 +83,7 @@ class ROB {
         void find_mem_dep(res_record &rr);
         void add_entry(res_record &rr); 
         void add_ref(res_record *rr);
+        void branch_flush(res_record &rr, decoder &d);
 };
 
 class BTB {

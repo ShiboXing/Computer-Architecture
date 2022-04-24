@@ -107,3 +107,29 @@ void ROB::find_mem_dep(res_record &rr) {
     if (!has_dep) 
         rr.qmem = &rr;
 }
+
+void ROB::branch_flush(res_record &rr, decoder &d) {
+    assert (rr._op == "bne");
+
+    if (entries.front() == &rr) // no preceding fetches
+        return;
+    auto it=entries.rbegin();
+    for (; it!=entries.rend(); it++) 
+        if (*it == &rr)
+            break;
+
+    if ((*(it+1))->_pc != rr.tag) { // prediction failed, flush!
+
+        // flush rob, res_station
+        while (entries.front() != *it) { 
+            entries.front()->executed = true; // free them in res_station
+            entries.pop_front();    
+        }
+
+        // flush decoder mapping
+        d.flush_mappings(rr._pc);
+        
+    }
+
+    
+}
