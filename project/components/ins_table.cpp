@@ -8,5 +8,5 @@ void ins_queue::add_ins(instruction &ins) {
 }
 
 void ins_queue::branch_flush() {
-    ins_q.clear(); // flush the incorrectly fetched instructions
+    ins_q.clear();
 }

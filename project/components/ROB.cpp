@@ -108,7 +108,7 @@ void ROB::find_mem_dep(res_record &rr) {
         rr.qmem = &rr;
 }
 
-void ROB::branch_flush(decoder &d, ins_queue &q) {
+void ROB::branch_flush(decoder &d, ins_queue &q, fetcher &f, BTB &btb) {
     
     int i = entries.size()-1;
     res_record *rr = NULL;
@@ -116,7 +116,7 @@ void ROB::branch_flush(decoder &d, ins_queue &q) {
         // locate the mis-predicted branch from back to front 
         /**
          * @brief conditions of miss prediction:
-         *  1. the pc of the ins following branch ins doesn't match its tag in ROB
+         *  1. the pc of the ins following a branch ins doesn't match its resolved destination in ROB
          *  2. the pc of the back ins of the ins_q doesn't match the branch ins at the front of ROB
          */
         if (entries[i]->_op == "bne" && entries[i]->executed && ( \
@@ -138,7 +138,11 @@ void ROB::branch_flush(decoder &d, ins_queue &q) {
             // flush incorrectly fetched insturctions
             q.branch_flush();
 
-            IF.set_pc(rr->tag); // finally set the PC to correctly position
+            // update BTB
+            btb.write_entry(rr->_pc, rr->tag);
+
+            // set the PC to correctly position
+            f.set_pc(rr->tag); 
             return;
         }
     }

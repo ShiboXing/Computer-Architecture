@@ -11,7 +11,6 @@ float REGS[32] = { 0 };
 unordered_map<string, int> TAG_TB;
 unordered_map<int, int> MEM;
 unordered_map<string, int> TAGS;
-fetcher IF;
 
 // declare extern tomasulo parameters
 int NF;
@@ -32,17 +31,19 @@ int main(int argc, char** argv) {
     NB = atoi(argv[4]);
 
     CDB bus(NB);
-    back_writer bck_wrter;
     ROB rob(NR);
+    BTB btb;
+    back_writer bck_wrter;
     res_station rs;
     ins_queue ins_tb;
     decoder d;
+    fetcher f;
     ofstream MEM_STREAM("mem.out");
     
     string codepth = argv[5];
-    IF.add_codepth(codepth); // open code file
-    IF.scan_tags(); // store all branch tags 
-    IF.add_codepth(codepth); // open code file
+    f.add_codepth(codepth); // open code file
+    f.scan_tags(); // store all branch tags 
+    f.add_codepth(codepth); // open code file for execution
     
     bool program_started = false;
     
@@ -57,10 +58,9 @@ int main(int argc, char** argv) {
 
         // EXECUTE 
         running |= rs.execute(bck_wrter, rob);
-        rob.branch_flush(d, ins_tb); // flush rob for potential miss prediction
+        rob.branch_flush(d, ins_tb, f, btb); // flush rob for potential miss prediction
 
         // DECODE, ISSUE
-        d.free_regs();
         for (int i=0; i<NW; i++) {
             if (ins_tb.ins_q.size()) {
                 running = true;
@@ -73,14 +73,24 @@ int main(int argc, char** argv) {
                     break;
                 }
             }
-        }        
+        }       
+        d.free_regs(); 
         
         // FETCH
         for (int i=0; i<NF; i++) {
             string ins_str;
-            if ((ins_str = IF.fetch_next()).length()) {
+            if ((ins_str = f.fetch_next()).length()) {
                 running = true;
-                instruction *ins = new instruction(PC++, ins_str);
+
+                // perform branch prediction
+                int target = btb.predict(PC);
+                instruction *ins = new instruction(PC, ins_str);
+                // perform branch fetch or increment PC
+                if (target != PC+1)
+                    f.set_pc(target);
+                else
+                    PC++;
+
                 if (ins->is_mem) { // load memory content and skip
                     delete ins;
                     break;

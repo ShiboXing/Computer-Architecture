@@ -6,6 +6,7 @@ using namespace std;
 
 class CDB;
 class ROB;
+class BTB;
 class back_writer;
 
 class ins_queue {
@@ -13,6 +14,16 @@ class ins_queue {
         deque<instruction*> ins_q;
         void add_ins(instruction &ins);
         void branch_flush();
+};
+
+class fetcher {
+    private:
+        ifstream *ins_stream;
+    public:
+        string fetch_next();
+        void add_codepth(string fname); 
+        void set_pc(int pc);
+        void scan_tags();
 };
 
 class res_station {
@@ -82,7 +93,7 @@ class ROB {
         void find_mem_dep(res_record &rr);
         void add_entry(res_record &rr); 
         void add_ref(res_record *rr);
-        void branch_flush(decoder &d, ins_queue &q);
+        void branch_flush(decoder &d, ins_queue &q, fetcher &f, BTB &btb);
 };
 
 class BTB {

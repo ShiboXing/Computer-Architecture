@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "components.h"
 
 using namespace std;
 
@@ -8,13 +8,10 @@ void fetcher::add_codepth(string fname) {
 
 string fetcher::fetch_next() {
     string line;
-    
-    if (!ins_stream->eof()) {
-        if (!getline(*ins_stream, line)) {
-            cout << "fetch stream is closed at PC " << PC << endl;
-        }
-    }
 
+    if (!ins_stream->eof()) 
+        getline(*ins_stream, line);
+    
     return line;
 }
 

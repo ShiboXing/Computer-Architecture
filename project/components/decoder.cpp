@@ -77,10 +77,10 @@ void decoder::flush_mappings(int pc) {
     areg_2_preg = a_snapshots[pc];
     preg_2_areg = p_snapshots[pc];
 
-    f_snapshots.clear();
-    a_snapshots.clear();
-    p_snapshots.clear();
-
+    f_snapshots.erase(pc);
+    a_snapshots.erase(pc);
+    p_snapshots.erase(pc);
+    
     *decode_stream << "========== FLUSH [PC: " << pc << "]===========" << endl;
 }
 

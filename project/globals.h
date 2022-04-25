@@ -41,8 +41,6 @@ using namespace std;
 })
 #define GET_REG_NUM(reg_str) stoi(reg_str.substr(1, reg_str.length()-1))
 
-class fetcher;
-
 extern int NF;
 extern int NW;
 extern int NR;
@@ -52,14 +50,3 @@ extern int CYCLE;
 extern float REGS[32];
 extern unordered_map<string, int> TAGS; // map tag string to PC addr
 extern unordered_map<int, int> MEM;
-extern fetcher IF;
-
-class fetcher {
-    private:
-        ifstream *ins_stream;
-    public:
-        string fetch_next();
-        void add_codepth(string fname); 
-        void set_pc(int pc);
-        void scan_tags();
-};
