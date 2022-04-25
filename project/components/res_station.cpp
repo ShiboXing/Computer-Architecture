@@ -63,6 +63,7 @@ bool res_station::can_issue(instruction &ins) {
         }
     }
 
-    cout << type << " reservation station is full!" << endl;
+    cout << "[CYCLE: " << CYCLE << "] " << type << " RESERVATION STALL" << endl;
+    RES_STALL++;
     return false;
 }

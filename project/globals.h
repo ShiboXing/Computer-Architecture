@@ -47,6 +47,10 @@ extern int NR;
 extern int NB;
 extern int PC;
 extern int CYCLE;
+extern int ROB_STALL;
+extern int RES_STALL;
+extern int CDB_STALL;
+extern int DECODE_STALL;
 extern float REGS[32];
 extern unordered_map<string, int> TAGS; // map tag string to PC addr
 extern unordered_map<int, int> MEM;

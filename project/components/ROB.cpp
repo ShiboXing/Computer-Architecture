@@ -9,7 +9,8 @@ bool ROB::is_full() {
     auto q_size = entries.size();
     assert (q_size <= _max_entries);
     if (q_size == _max_entries) {
-        cout << "ROB is full!" << endl;
+        cout << "[CYCLE: " << CYCLE << "] ROB STALL" << endl;
+        ROB_STALL++;
         return true;
     }
 
@@ -57,7 +58,7 @@ void ROB::find_dep(res_record &rr) {
 }
 
 void ROB::find_mem_dep(res_record &rr) {
-    if (rr._op != "fld" || (rr.qk && !rr.qk->written_back) || rr.qmem != NULL)  // not load || operands are not ready || mem dependency found or no dependency
+    if (rr._op != "fld" || (rr.qk && !rr.qk->written_back) || rr.qmem != NULL)  // not load || operands are not ready || mem dependency resolved
         return;
 
     bool started = false;

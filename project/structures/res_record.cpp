@@ -76,7 +76,7 @@ bool res_record::execute() {
     if (_op == "fld" && (!qmem || (qmem != this && qmem->written_back))) // check fld for its mem dependency
         return false;
 
-    if (cycles_left == 0) {
+    if (cycles_left == 1) {
         float fj_res = _decode(fj, qj);
         float fk_res = _decode(fk, qk);
 

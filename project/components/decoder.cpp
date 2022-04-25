@@ -22,8 +22,10 @@ void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool 
         *decode_stream << reg << " ";
     }
     *decode_stream << endl;
-    if (is_branch) 
-        *decode_stream << "========== BRANCH [PC: " << pc << "]========== " << endl;
+    if (is_branch) {
+        cout << "\033[32m ========== BRANCH [PC: " << pc << "]========== \033[0m" << endl;
+        *decode_stream << "\033[32m ========== BRANCH [PC: " << pc << "]========== \033[0m" << endl;
+    }
 }
 
 bool decoder::rename(instruction &ins) {
@@ -82,7 +84,8 @@ void decoder::flush_mappings(int pc) {
     a_snapshots.erase(pc);
     p_snapshots.erase(pc);
     
-    *decode_stream << "========== FLUSH [PC: " << pc << "]===========" << endl;
+    cout << "\033[31m ========== FLUSH [PC: " << pc << "]=========== \033[0m" << endl;
+    *decode_stream << "\033[31m ========== FLUSH [PC: " << pc << "]=========== \033[0m" << endl;
 }
 
 void decoder::update_commit(string reg, bool committed) {
@@ -122,7 +125,8 @@ void decoder::free_regs() {
 
 bool decoder::can_rename() {
     if (_free_lst.size() == 0) {
-        cout << "no free register left" << endl;
+        cout << "[CYCLE: " << CYCLE << "] DECODE STALL" << endl;
+        DECODE_STALL++;
         return false;
     }
     return true;

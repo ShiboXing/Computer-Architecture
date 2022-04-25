@@ -9,7 +9,7 @@ bool CDB::add_entry(res_record &rr) {
         inflight.push_front(&rr);
         return true;
     }
-
+    cout << "[CYCLE: " << CYCLE << "] CDB STALL" << endl;
     return false;
 }
 

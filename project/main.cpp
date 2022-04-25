@@ -7,6 +7,10 @@ using namespace std;
 // initialize extern vars
 int PC = 0;
 int CYCLE = 0;
+int ROB_STALL = 0;
+int RES_STALL = 0;
+int CDB_STALL = 0;
+int DECODE_STALL = 0;
 float REGS[32] = { 0 };
 unordered_map<string, int> TAG_TB;
 unordered_map<int, int> MEM;
@@ -113,19 +117,22 @@ int main(int argc, char** argv) {
         }
 
         // increment cycle count
-        if (program_started) {
+        if (program_started) 
             CYCLE++;
-            cout << "cycle: " << CYCLE << endl;
-        } else {
-            cout << "loading memory: " << endl;
-        }        
     }
 
+    cout << endl;
+    cout << "RESERVATION STATION STALLS: \033[31m" << RES_STALL << "\033[0m" << endl;
+    cout << "ROB STALLS: \033[31m" << ROB_STALL << "\033[0m" << endl;
+    cout << "DECODE STALLS: \033[31m" << DECODE_STALL << "\033[0m" << endl;
+    cout << "CDB STALLS: \033[31m" << CDB_STALL << "\033[0m" << endl;
+    cout << "TOTAL CYCLES: \033[32m" << CYCLE  << "\033[0m" << endl;
+    
     // print out regs
     d.print_regs();
     
     // print out memory
-    MEM_STREAM << "memory content: " << endl;
+    MEM_STREAM << "MEM CONTENT: " << endl;
     for (auto itm : MEM) {
         MEM_STREAM << itm.first << ":  " << itm.second << endl;
     }
