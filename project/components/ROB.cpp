@@ -40,9 +40,6 @@ bool ROB::commit(CDB &bus, decoder &d) {
             }
         } 
 
-        // free_dep(rr->qj);
-        // free_dep(rr->qk);
-
         // pop ROB
         entries.pop_back();
     }
@@ -50,37 +47,12 @@ bool ROB::commit(CDB &bus, decoder &d) {
     return has_entries;
 }
 
-
 void ROB::find_dep(res_record &rr) {
     for (auto rob_rr : entries) { // front to back 
         if (rr.qj == NULL && rob_rr->fi == rr.fj) // don't overwrite if already filled
             rr.qj = rob_rr;
         if (rr.qk == NULL && rob_rr->fi == rr.fk) 
             rr.qk = rob_rr;
-    }
-
-    // add_ref(rr.qj);
-    // add_ref(rr.qk);
-}
-
-void ROB::free_dep(res_record *rr) {
-    if (rr == NULL) 
-        return;
-
-    garbage_collector[rr]--;
-    if (garbage_collector[rr] == 0) {
-        garbage_collector.erase(rr);
-        delete rr; // free dependecy rr 
-    }
-}
-
-void ROB::add_ref(res_record *rr) {
-    if (rr) {
-        if (garbage_collector.find(rr) == garbage_collector.end()) {
-            garbage_collector[rr] = 1;
-        } else {
-            garbage_collector[rr]++;
-        }
     }
 }
 

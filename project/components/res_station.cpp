@@ -27,7 +27,6 @@ bool res_station::issue(instruction &ins, ROB &rob) {
             
             
             rob.find_dep(*tmp); // mark the dependencies in record
-            rob.add_ref(tmp); // record reference count, for garbage collection
             rob.add_entry(*tmp); // put it in rob
             return true;
         }

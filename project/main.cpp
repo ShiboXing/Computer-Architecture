@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
             }
         }       
         d.free_regs(); 
+       
         
         // FETCH
         for (int i=0; i<NF; i++) {

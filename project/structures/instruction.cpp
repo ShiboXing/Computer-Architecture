@@ -15,7 +15,6 @@ instruction::instruction(int pc_ind, string &ins) {
         }
         start++;
     }
-
     _fill_info(ins_lst);
 }
 

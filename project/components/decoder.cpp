@@ -2,13 +2,14 @@
 
 decoder::decoder() {
     for (int i=31; i>=0; i--) {
-       _free_lst.insert("p" + to_string(i));
+       _free_lst.push_back("p" + to_string(i));
     }
 
     decode_stream = new ofstream("decode.out");
 }
 
 void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool is_branch, int pc) {
+    *decode_stream << "[CYCLE " << CYCLE << "] ";
     for (string i : aregs) {
         *decode_stream << i << " ";
     }
@@ -17,8 +18,8 @@ void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool 
         *decode_stream << i << " ";
     }
     *decode_stream << "    free_list: ";
-    for (auto it=_free_lst.begin(); it!=_free_lst.end(); it++) {
-        *decode_stream << *it << " ";
+    for (string reg : _free_lst) {
+        *decode_stream << reg << " ";
     }
     *decode_stream << endl;
     if (is_branch) 
@@ -28,7 +29,7 @@ void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool 
 bool decoder::rename(instruction &ins) {
 
     // need a free reg for dest
-    string new_preg = *_free_lst.begin();
+    string new_preg = _free_lst.back();
 
     vector<string> *last_ins = &ins._info;
     vector<string> aregs(*last_ins);
@@ -56,7 +57,7 @@ bool decoder::rename(instruction &ins) {
         preg_2_areg[new_preg] = dest_areg;
         (*last_ins)[1] = new_preg;
         
-        _free_lst.erase(new_preg); // remove the new reg from free list
+        _free_lst.pop_back(); // remove the new reg from free list
         update_commit(new_preg, false);
     }
 
@@ -105,9 +106,18 @@ void decoder::free_regs() {
     for (auto itm : preg_2_areg) {
         if (commit_status[itm.first] && itm.first != areg_2_preg[itm.second]) {
             preg_2_areg.erase(itm.first);
-            _free_lst.insert(itm.first);
+            _free_lst.push_back(itm.first); 
         }
     }
+    
+    sort(_free_lst.begin(), _free_lst.end(), [](const string a, const string b) {
+        if (a.length() > b.length())
+            return true;
+        else if (a.length() < b.length())
+            return false;
+        else 
+            return a > b;
+   }); 
 }
 
 bool decoder::can_rename() {

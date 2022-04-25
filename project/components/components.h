@@ -40,12 +40,12 @@ class res_station {
 class decoder {
     private:
         ofstream *decode_stream;
-        set<string> _free_lst;
+        vector<string> _free_lst;
         unordered_map<string, string> areg_2_preg;
         unordered_map<string, string> preg_2_areg;
         unordered_map<string, bool> commit_status;
 
-        unordered_map< int, set<string> > f_snapshots; // important to store the static-allocated objects
+        unordered_map< int, vector<string> > f_snapshots; // important to store the static-allocated objects
         unordered_map< int, unordered_map<string, string> > a_snapshots;
         unordered_map< int, unordered_map<string, string> > p_snapshots;
 
@@ -85,7 +85,6 @@ class ROB {
         void free_dep(res_record *rr);
     public:
         deque<res_record*> entries;
-        unordered_map<res_record*, int> garbage_collector; // count the references to each dependency
         ROB(int nr);
         bool is_full();
         bool commit(CDB &bus, decoder &d);
