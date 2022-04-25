@@ -1,5 +1,6 @@
 #include "components.h"
 
+// attempt to send to bus
 bool back_writer::write_back(CDB &bus) {
     bool has_entries = entries.size() > 0;
     
@@ -16,6 +17,7 @@ bool back_writer::write_back(CDB &bus) {
     return has_entries;   
 }
 
+// add to the write back buffer
 void back_writer::add_entry(res_record &res) {
     entries.push_front(&res);
 }

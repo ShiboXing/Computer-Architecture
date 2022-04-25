@@ -2,10 +2,12 @@
 
 using namespace std;
 
+// add the code file
 void fetcher::add_codepth(string fname) {
     ins_stream = new ifstream(fname);
 }
 
+// fetch instruction from the current PC
 string fetcher::fetch_next() {
     string line;
 
@@ -15,6 +17,7 @@ string fetcher::fetch_next() {
     return line;
 }
 
+// scan all tags in the code file, sufficing the compiler's role herein
 void fetcher::scan_tags() {
     ins_stream->seekg(0); // reset to the beginning
     string line;
@@ -29,6 +32,7 @@ void fetcher::scan_tags() {
     }
 }
 
+// set the PC to target (used by branching or flushing)
 void fetcher::set_pc(int pc) {
     ins_stream->seekg(0); // reset to the beginning
     string line;

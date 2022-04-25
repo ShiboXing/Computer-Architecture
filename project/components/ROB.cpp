@@ -5,6 +5,7 @@ ROB::ROB(int nr) {
     _max_entries = nr;
 }
 
+// stall if no room in ROB
 bool ROB::is_full() {
     auto q_size = entries.size();
     assert (q_size <= _max_entries);
@@ -17,11 +18,13 @@ bool ROB::is_full() {
     return false;
 }
 
+// add one res_record to the ROB queue
 void ROB::add_entry(res_record &rr) { 
     assert (!is_full());
     entries.push_front(&rr);
 }
 
+// send res_record to CDB, update commit status
 bool ROB::commit(CDB &bus, decoder &d) {
     res_record *rr;
     bool has_entries = entries.size() > 0;
@@ -48,6 +51,7 @@ bool ROB::commit(CDB &bus, decoder &d) {
     return has_entries;
 }
 
+// sequentially mark dependencies 
 void ROB::find_dep(res_record &rr) {
     for (auto rob_rr : entries) { // front to back 
         if (rr.qj == NULL && rob_rr->fi == rr.fj) // don't overwrite if already filled
@@ -57,6 +61,7 @@ void ROB::find_dep(res_record &rr) {
     }
 }
 
+// sequentially mark memory dependencies for the mem instructions whose operands are resolved
 void ROB::find_mem_dep(res_record &rr) {
     if (rr._op != "fld" || (rr.qk && !rr.qk->written_back) || rr.qmem != NULL)  // not load || operands are not ready || mem dependency resolved
         return;
@@ -81,6 +86,7 @@ void ROB::find_mem_dep(res_record &rr) {
         rr.qmem = &rr;
 }
 
+// check if the newly executed branch's target is matched with the following instrution's pc
 void ROB::branch_flush(decoder &d, ins_queue &q, fetcher &f, BTB &btb) {
     
     int i = entries.size()-1;

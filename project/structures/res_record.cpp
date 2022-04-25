@@ -8,6 +8,7 @@ res_record::res_record() {
     executed = written_back = committed = false;
 }
 
+// copy all decoded operands and instruction-related info
 res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
 
     _pc = pc_ind;
@@ -48,6 +49,7 @@ res_record::res_record(vector<string> &info, int pc_ind) : res_record() {
     cycles_left = INS_LAT[_op];
 }
 
+// resolve operands either through the dependent register or immediate values
 float res_record::_decode(string reg, res_record *ref) {
     int reg_num;
     if (reg.length()) {
@@ -69,6 +71,7 @@ float res_record::_decode(string reg, res_record *ref) {
     }
 }  
 
+// perform ALU, or decrement the latency cyclce countdown
 bool res_record::execute() {
 
     if (executed || (qj && !qj->written_back) || (qk && !qk->written_back)) // check if operands are resolved
@@ -102,7 +105,7 @@ bool res_record::execute() {
             }
         }
         
-        return executed = true;
+        return executed = true; // mark for recycle 
     } else {
         cycles_left--;
     }
@@ -110,6 +113,7 @@ bool res_record::execute() {
     return false;
 }
 
+// ALU for resolving the mem addr
 int res_record::get_mem_addr() {
     assert (_op == "fld" || _op == "fsd");
     assert (!qk || qk->written_back);

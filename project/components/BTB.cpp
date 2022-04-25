@@ -1,5 +1,6 @@
 #include "components.h"
 
+// add branch target and the branch outcome to BTB mapping
 void BTB::write_entry(int pc, int target) {
     assert (targets.size() == predicts.size());
 
@@ -15,6 +16,7 @@ void BTB::write_entry(int pc, int target) {
     assert (targets.size() == predicts.size() && targets.size() <= max_size);
 }
 
+// fetch prediction result from BTB
 int BTB::predict(int pc) {
     if (targets.find(pc) == targets.end() || !predicts[pc])
         return pc+1;

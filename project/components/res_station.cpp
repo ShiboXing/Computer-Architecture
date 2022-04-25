@@ -1,5 +1,6 @@
 #include "components.h"
 
+// initialize the station of each functional unit, which is a vector of res_records
 res_station::res_station() {
     for (auto item : RES_CNT) {
         _board[item.first] = new vector<res_record*>();
@@ -11,7 +12,7 @@ res_station::res_station() {
     }
 }
 
-// return whether successfully issued 
+// find a res_record whose executed flag is true, and replace it with the new one containing the instruction
 bool res_station::issue(instruction &ins, ROB &rob) {
 
     // check if the corresponding function unit's reservation station is full
@@ -36,6 +37,7 @@ bool res_station::issue(instruction &ins, ROB &rob) {
     return false;   
 }
 
+// let each the res_record execute if it is possible
 bool res_station::execute(back_writer &bck_wrter, ROB &rob) {
     bool has_records = false;
 
@@ -52,6 +54,7 @@ bool res_station::execute(back_writer &bck_wrter, ROB &rob) {
     return has_records;
 }
 
+// add the instruction to its corresponding reservation station, if it's not full
 bool res_station::can_issue(instruction &ins) {
     string op = ins._info[0];
     string type = TYPE_MAP[op];

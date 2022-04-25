@@ -1,5 +1,6 @@
 #include "components.h"
 
+// initialize all the physical registers
 decoder::decoder() {
     for (int i=31; i>=0; i--) {
        _free_lst.push_back("p" + to_string(i));
@@ -8,6 +9,7 @@ decoder::decoder() {
     decode_stream = new ofstream("decode.out");
 }
 
+// print out the register mappings
 void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool is_branch, int pc) {
     *decode_stream << "[CYCLE " << CYCLE << "] ";
     for (string i : aregs) {
@@ -28,6 +30,7 @@ void decoder::_output_mapping(vector<string> &info, vector<string> &aregs, bool 
     }
 }
 
+// map the destination and the operands to physical registers
 bool decoder::rename(instruction &ins) {
 
     // need a free reg for dest
@@ -65,7 +68,7 @@ bool decoder::rename(instruction &ins) {
 
     _output_mapping(*last_ins, aregs, op == "bne", ins._pc);
 
-    if (op == "bne") {
+    if (op == "bne") { // save the decoder snapshot
         f_snapshots[ins._pc] = _free_lst;
         a_snapshots[ins._pc] = areg_2_preg;
         p_snapshots[ins._pc] = preg_2_areg;
@@ -74,6 +77,7 @@ bool decoder::rename(instruction &ins) {
     return true;
 }
 
+// reset the decoder's mappings to the a pre-branch state using the branch instruction's pc
 void decoder::flush_mappings(int pc) {
 
     _free_lst = f_snapshots[pc];
@@ -88,6 +92,7 @@ void decoder::flush_mappings(int pc) {
     *decode_stream << "\033[31m ========== FLUSH [PC: " << pc << "]=========== \033[0m" << endl;
 }
 
+// update the commit status of a register
 void decoder::update_commit(string reg, bool committed) {
     if (!reg.length())
         return;
@@ -95,6 +100,7 @@ void decoder::update_commit(string reg, bool committed) {
     commit_status[reg] = committed;
 }
 
+// print out register content
 void decoder::print_regs() {
 
     ofstream reg_stream("regs.out");
@@ -105,6 +111,7 @@ void decoder::print_regs() {
     }
 }
 
+// check if a register is committed and remapped, add it back to free list if yes
 void decoder::free_regs() {
     for (auto itm : preg_2_areg) {
         if (commit_status[itm.first] && itm.first != areg_2_preg[itm.second]) {
@@ -113,7 +120,7 @@ void decoder::free_regs() {
         }
     }
     
-    sort(_free_lst.begin(), _free_lst.end(), [](const string a, const string b) {
+    sort(_free_lst.begin(), _free_lst.end(), [](const string a, const string b) { // sort free list for better execution result coherence
         if (a.length() > b.length())
             return true;
         else if (a.length() < b.length())
@@ -123,6 +130,7 @@ void decoder::free_regs() {
    }); 
 }
 
+// check if there is a free register left
 bool decoder::can_rename() {
     if (_free_lst.size() == 0) {
         cout << "[CYCLE: " << CYCLE << "] DECODE STALL" << endl;

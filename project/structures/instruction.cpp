@@ -1,6 +1,7 @@
 #include "structures.h"
 #include <iostream>
 
+// instruction object for the in-order portion
 instruction::instruction(int pc_ind, string &ins) {
     _pc = pc_ind;
     int start = 0;
@@ -18,6 +19,7 @@ instruction::instruction(int pc_ind, string &ins) {
     _fill_info(ins_lst);
 }
 
+// copy the info from the fetched instruction line
 void instruction::_fill_info(vector<string> &ins) {
     // check if ins is memory allocation
     if (ins.size() == 2 && ins[0][0] >= '0' && ins[0][0] <= '9') { 
@@ -36,7 +38,7 @@ void instruction::_fill_info(vector<string> &ins) {
     }
 }
 
-// get the next parsable symbol in instruction string, from index 'start'
+// (utility function) get the next parsable symbol in instruction string, from index 'start'
 // then returns the next end index of the next parsable symbol
 string instruction::_split_one(string ins, int *start) {
     string tmp = "";
