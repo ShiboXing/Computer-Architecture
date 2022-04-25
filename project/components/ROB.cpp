@@ -118,10 +118,12 @@ void ROB::branch_flush(decoder &d, ins_queue &q, fetcher &f, BTB &btb) {
          * @brief conditions of miss prediction:
          *  1. the pc of the ins following a branch ins doesn't match its resolved destination in ROB
          *  2. the pc of the back ins of the ins_q doesn't match the branch ins at the front of ROB
+         *  3. a branch ins at ROB front will be taken, whereas no ins is found in ins_q (EOF ins is a branch)
          */
         if (entries[i]->_op == "bne" && entries[i]->executed && ( \
                 (i-1>=0 && entries[i]->tag != entries[i-1]->_pc) || \
-                (i==0 && q.ins_q.size() && entries[i]->tag != q.ins_q.back()->_pc))
+                (i==0 && q.ins_q.size() && entries[i]->tag != q.ins_q.back()->_pc) || \
+                (i==0 && entries[i]->tag!=entries[i]->_pc+1 && q.ins_q.size()==0))
             ) {
 
             rr = entries[i];
