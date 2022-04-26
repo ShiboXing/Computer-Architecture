@@ -38,16 +38,18 @@ bool res_station::issue(instruction &ins, ROB &rob) {
 }
 
 // let each the res_record execute if it is possible
-bool res_station::execute(back_writer &bck_wrter, ROB &rob) {
+bool res_station::execute(back_writer &bck_wrter, ROB &rob, bool *branch_executed) {
     bool has_records = false;
-
     for (auto item : _board) {
         auto station = item.second;
         for (res_record *rr : *station) {
             has_records |= !rr->executed;
             rob.find_mem_dep(*rr);
-            if (rr->execute())
+            if (rr->execute()) {
                 bck_wrter.add_entry(*rr);
+                if (rr->_op == "bne")
+                    *branch_executed = true;
+            }
         }
     }
     

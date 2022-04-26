@@ -89,41 +89,43 @@ void ROB::find_mem_dep(res_record &rr) {
 // check if the newly executed branch's target is matched with the following instrution's pc
 void ROB::branch_flush(decoder &d, ins_queue &q, fetcher &f, BTB &btb) {
     
-    int i = entries.size()-1;
     res_record *rr = NULL;
-    for (; i>=0; i--) {
+    for (int i=0; i<entries.size(); i++) {
         // locate the mis-predicted branch from back to front 
-        /**
-         * @brief conditions of miss prediction:
-         *  1. the pc of the ins following a branch ins doesn't match its resolved destination in ROB
-         *  2. the pc of the back ins of the ins_q doesn't match the branch ins at the front of ROB
-         *  3. a branch ins at ROB front will be taken, whereas no ins is found in ins_q (EOF ins is a branch)
-         */
-        if (entries[i]->_op == "bne" && entries[i]->executed && ( \
-                (i-1>=0 && entries[i]->tag != entries[i-1]->_pc) || \
-                (i==0 && q.ins_q.size() && entries[i]->tag != q.ins_q.back()->_pc) || \
-                (i==0 && entries[i]->tag!=entries[i]->_pc+1 && q.ins_q.size()==0))
-            ) {
+        
+        if (entries[i]->_op == "bne" && entries[i]->executed) {
+                /**
+                 * @brief conditions of miss prediction:
+                 *  1. the pc of the ins following a branch ins doesn't match its resolved destination in ROB
+                 *  2. the pc of the back ins of the ins_q doesn't match the branch ins at the front of ROB
+                 *  3. a branch ins at ROB front will be taken, whereas no ins is found in ins_q (EOF ins is a branch)
+                 */
+                if (((i-1>=0 && entries[i]->tag != entries[i-1]->_pc) || \
+                    (i==0 && q.ins_q.size() && entries[i]->tag != q.ins_q.back()->_pc) || \
+                    (i==0 && entries[i]->tag!=entries[i]->_pc+1 && q.ins_q.size()==0))) {
 
-            rr = entries[i];
-            // flush ROB
-            while (entries.front() != rr) {
-                entries.front()->executed = entries.front()->committed = entries.front()->committed = true; // free them in res_station too
-                d.update_commit(rr->fi, true); // let decoder know dest reg is committed
-                entries.pop_front();
+                    rr = entries[i];
+                    // flush ROB
+                    while (entries.front() != rr) {
+                        entries.front()->executed = entries.front()->committed = entries.front()->committed = true; // free them in res_station too
+                        d.update_commit(rr->fi, true); // let decoder know dest reg is committed
+                        entries.pop_front();
+                    }
+                            
+                    // flush & restore decoder mappings
+                    d.flush_mappings(rr->_pc);
+
+                    // flush incorrectly fetched insturctions
+                    q.branch_flush();
+
+                    // update BTB
+                    btb.write_entry(rr->_pc, rr->tag);
+
+                    // set the PC to correctly position
+                    f.set_pc(rr->tag); 
+            } else { // prediction is correct
+                d.pop_snapshots();
             }
-                    
-            // flush & restore decoder mappings
-            d.flush_mappings(rr->_pc);
-
-            // flush incorrectly fetched insturctions
-            q.branch_flush();
-
-            // update BTB
-            btb.write_entry(rr->_pc, rr->tag);
-
-            // set the PC to correctly position
-            f.set_pc(rr->tag); 
             return;
         }
     }

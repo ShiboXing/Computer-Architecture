@@ -34,7 +34,7 @@ class res_station {
         res_station();
         bool can_issue(instruction &ins);
         bool issue(instruction &ins, ROB &rob);
-        bool execute(back_writer &bck_wrter, ROB &rob);
+        bool execute(back_writer &bck_wrter, ROB &rob, bool *branch_executed);
 };
 
 class decoder {
@@ -45,9 +45,9 @@ class decoder {
         unordered_map<string, string> preg_2_areg;
         unordered_map<string, bool> commit_status;
 
-        unordered_map< int, vector<string> > f_snapshots; // important to store the static-allocated objects
-        unordered_map< int, unordered_map<string, string> > a_snapshots;
-        unordered_map< int, unordered_map<string, string> > p_snapshots;
+        deque<vector<string> > f_snapshots;
+        deque<unordered_map<string, string> > a_snapshots;
+        deque<unordered_map<string, string> > p_snapshots;
 
         void _output_mapping(vector<string> &info, vector<string> &aregs, bool is_branch, int pc);
     public:
@@ -56,6 +56,7 @@ class decoder {
         void free_regs();
         void update_commit(string reg, bool committed);
         void flush_mappings(int pc); // store info as snapshots, used by branch prediction flushing
+        void pop_snapshots();
         bool rename(instruction &ins);
         bool can_rename();
 };
@@ -100,7 +101,6 @@ class BTB {
         const int max_size = 16;
         unordered_map<int, int> targets;
         unordered_map<int, bool> predicts; // 1 bit predictor, bool type
-        unordered_map<int, int> lru_stamps; // map pc to cycle count, for eviction
 
     public:
         void write_entry(int pc, int target);

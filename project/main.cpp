@@ -23,7 +23,7 @@ int NR;
 int NB;
 
 int main(int argc, char** argv) {
-
+    
     if (argc != 6) {
         cout << "usage : ./main [NF] [NW] [NR] [NB] [path_to_test_file] " << endl;
         exit(0);
@@ -61,8 +61,10 @@ int main(int argc, char** argv) {
         running |= bck_wrter.write_back(bus);
 
         // EXECUTE 
-        running |= rs.execute(bck_wrter, rob);
-        rob.branch_flush(d, ins_tb, f, btb); // flush rob for potential miss prediction
+        bool branch_executed = false;
+        running |= rs.execute(bck_wrter, rob, &branch_executed);
+        if (branch_executed)
+            rob.branch_flush(d, ins_tb, f, btb); // flush rob for potential miss prediction
 
         // DECODE, ISSUE
         for (int i=0; i<NW; i++) {

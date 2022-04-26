@@ -69,9 +69,9 @@ bool decoder::rename(instruction &ins) {
     _output_mapping(*last_ins, aregs, op == "bne", ins._pc);
 
     if (op == "bne") { // save the decoder snapshot
-        f_snapshots[ins._pc] = _free_lst;
-        a_snapshots[ins._pc] = areg_2_preg;
-        p_snapshots[ins._pc] = preg_2_areg;
+        f_snapshots.push_front(_free_lst);
+        a_snapshots.push_front(areg_2_preg);
+        p_snapshots.push_front(preg_2_areg);
     }
 
     return true;
@@ -80,16 +80,21 @@ bool decoder::rename(instruction &ins) {
 // reset the decoder's mappings to the a pre-branch state using the branch instruction's pc
 void decoder::flush_mappings(int pc) {
 
-    _free_lst = f_snapshots[pc];
-    areg_2_preg = a_snapshots[pc];
-    preg_2_areg = p_snapshots[pc];
+    _free_lst = f_snapshots.back();
+    areg_2_preg = a_snapshots.back();
+    preg_2_areg = p_snapshots.back();
 
-    f_snapshots.erase(pc);
-    a_snapshots.erase(pc);
-    p_snapshots.erase(pc);
-    
     cout << "\033[31m ========== FLUSH [PC: " << pc << "]=========== \033[0m" << endl;
     *decode_stream << "\033[31m ========== FLUSH [PC: " << pc << "]=========== \033[0m" << endl;
+
+    pop_snapshots();
+}
+
+// pop snapshots
+void decoder::pop_snapshots() {
+    f_snapshots.pop_back();
+    a_snapshots.pop_back();
+    p_snapshots.pop_back();
 }
 
 // update the commit status of a register
